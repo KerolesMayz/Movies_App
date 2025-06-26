@@ -23,5 +23,16 @@ class ThemeManager {
         color: ColorsManager.white,
       ),
     ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: ColorsManager.mediumBlack,
+      showUnselectedLabels: false,
+      showSelectedLabels: false,
+    ),
+    bottomAppBarTheme: BottomAppBarTheme(
+      padding: EdgeInsets.zero,
+      color: ColorsManager.transparent,
+    ),
+    splashFactory: NoSplash.splashFactory,
   );
 }
