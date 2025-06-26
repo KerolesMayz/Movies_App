@@ -9,3 +9,11 @@ class OnboardingAssets {
   static const String onboarding4 = "$base/onboarding_4.png";
   static const String onboarding5 = "$base/onboarding_5.png";
 }
+
+class SvgIcons {
+  static const String base = "assets/icons";
+  static const String explore = "$base/explore.svg";
+  static const String home = "$base/home.svg";
+  static const String profile = "$base/profile.svg";
+  static const String search = "$base/search.svg";
+}
