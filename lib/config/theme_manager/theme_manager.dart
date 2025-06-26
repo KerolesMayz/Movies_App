@@ -1,8 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
 
 class ThemeManager {
   static ThemeData dark = ThemeData(
     scaffoldBackgroundColor: ColorsManager.black,
+    textTheme: TextTheme(
+      titleLarge: GoogleFonts.inter(
+        fontWeight: FontWeight.w500,
+        fontSize: 36.sp,
+        color: ColorsManager.white,
+      ),
+      titleMedium: GoogleFonts.inter(
+        fontWeight: FontWeight.w700,
+        fontSize: 24.sp,
+        color: ColorsManager.white,
+      ),
+      titleSmall: GoogleFonts.inter(
+        fontWeight: FontWeight.w400,
+        fontSize: 20.sp,
+        color: ColorsManager.white,
+      ),
+    ),
   );
 }

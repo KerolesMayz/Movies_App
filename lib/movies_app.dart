@@ -19,7 +19,7 @@ class MoviesApp extends StatelessWidget {
           onGenerateRoute: RoutesManager.router,
           darkTheme: ThemeManager.dark,
           themeMode: ThemeMode.dark,
-          initialRoute: RoutesManager.login,
+          initialRoute: RoutesManager.explore,
         );
       },
     );
