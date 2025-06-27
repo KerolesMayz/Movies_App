@@ -39,6 +39,7 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_svg: ^2.2.0
   animated_toggle_switch: ^0.8.5
+  carousel_slider: ^5.1.1
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,7 @@ flutter:
     - assets/images/splash/
     - assets/images/onboarding/
     - assets/images/flags/
+    - assets/images/avatars/
     - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
