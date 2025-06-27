@@ -41,35 +41,16 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Register"),
+        leading: IconButton(onPressed: (){}, icon: Icon(Icons.arrow_back)),
+      ),
       backgroundColor: ColorsManager.black,
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 40.h),
-
-            // Back and Title
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.arrow_back, color: ColorsManager.yellow),
-                ),
-                SizedBox(width: 8.w),
-                Text(
-                  "Register",
-                  style: TextStyle(
-                    color: ColorsManager.yellow,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 20.h),
-
             // Avatar Picker
             Center(
               child: Column(

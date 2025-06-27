@@ -5,6 +5,16 @@ import 'package:movies/core/colors_manager/colors_Manager.dart';
 
 class ThemeManager {
   static ThemeData dark = ThemeData(
+    appBarTheme: AppBarTheme(
+      backgroundColor: ColorsManager.transparent,
+      foregroundColor: ColorsManager.yellow,
+      titleTextStyle: GoogleFonts.roboto(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+        color: ColorsManager.yellow,
+      ),
+        centerTitle: true,
+    ),
     scaffoldBackgroundColor: ColorsManager.black,
     textTheme: TextTheme(
       titleLarge: GoogleFonts.inter(
