@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: Padding(
-        padding: REdgeInsets.symmetric(horizontal: 10),
+        padding: REdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: BottomAppBar(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),

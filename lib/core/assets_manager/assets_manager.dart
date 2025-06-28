@@ -1,4 +1,8 @@
-class AssetsManager {}
+class AssetsManager {
+  static const String base = "assets/images";
+  static const String availableNow = "$base/available_now.png";
+  static const String watchNow = "$base/watch_now.png";
+}
 
 class OnboardingAssets {
   static const String base = "assets/images/onboarding";
