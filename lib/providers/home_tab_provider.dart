@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:movies/data/api_services/api_services.dart';
-import 'package:movies/data/models/Movies.dart';
 
+import '../data/models/movies_response/Movies.dart';
 import '../data/result/result.dart';
 
-class MoviesProvider extends ChangeNotifier {
+class HomeTabProvider extends ChangeNotifier {
   MoviesState trendingState = MoviesLoadingState();
   Map<String, MoviesState> recommendedStates = {};
   Map<String, List<Movies>> recommendedLists = {};

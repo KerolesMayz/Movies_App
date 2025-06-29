@@ -5,7 +5,7 @@ import 'package:movies/core/extension/context_extension.dart';
 import 'package:movies/core/widgets/error_state_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/movies_provider.dart';
+import '../../providers/home_tab_provider.dart';
 import '../colors_manager/colors_Manager.dart';
 
 class RecommendationMovies extends StatelessWidget {
@@ -20,7 +20,7 @@ class RecommendationMovies extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MoviesProvider>(context);
+    final provider = Provider.of<HomeTabProvider>(context);
     final state = provider.recommendedStates[sectionKey];
     final movies = provider.recommendedLists[sectionKey] ?? [];
     switch (state) {

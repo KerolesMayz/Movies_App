@@ -11,12 +11,14 @@ class CustomButton extends StatelessWidget {
     this.onTap,
     this.foregroundColor = ColorsManager.black,
     this.backgroundColor = ColorsManager.yellow,
+    this.borderColor = ColorsManager.yellow
   });
 
   final String text;
   final VoidCallback? onTap;
   final Color backgroundColor;
   final Color foregroundColor;
+  final Color borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class CustomButton extends StatelessWidget {
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: ColorsManager.yellow),
+          side: BorderSide(color: borderColor),
           borderRadius: BorderRadius.circular(16.r),
         ),
       ),

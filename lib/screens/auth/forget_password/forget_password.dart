@@ -1,75 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:movies/core/colors_manager/colors_Manager.dart';
+import 'package:movies/core/extension/context_extension.dart';
+import 'package:movies/core/widgets/custom_button.dart';
+import 'package:movies/core/widgets/custom_text_form_field.dart';
 
-class ForgetPassword extends StatelessWidget {
+class ForgetPassword extends StatefulWidget {
   const ForgetPassword({super.key});
+
+  @override
+  State<ForgetPassword> createState() => _ForgetPasswordState();
+}
+
+class _ForgetPasswordState extends State<ForgetPassword> {
+  late TextEditingController _emailController;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String? _emailValidator(String? input) {
+    if (input == null || input.trim().isEmpty) {
+      return 'Please inter your email';
+    } else if (!RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]",
+    ).hasMatch(input)) {
+      return 'Please inter a valid email';
+    }
+    return null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Forget Password"),
-        leading: IconButton(onPressed: (){}, icon: Icon(Icons.arrow_back)),
-      ),
-      backgroundColor: ColorsManager.black,
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
+      appBar: AppBar(title: Text("Forget Password")),
+      body: Form(
+        key: _formKey,
         child: ListView(
-          // crossAxisAlignment: CrossAxisAlignment.start,
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           children: [
-            Center(
-              child: Image.asset(
-                "assets/images/forget_password.png",
-                width: 300.w,
-              ),
+            Image.asset(
+              "assets/images/forget_password.png",
+              width: context.width,
             ),
+            SizedBox(height: 24.h),
 
-            SizedBox(height: 40.h),
-
-            // Email Field
-            Container(
-              decoration: BoxDecoration(
-                color: ColorsManager.lightBlack,
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: TextField(
-                style: TextStyle(color: ColorsManager.white),
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  labelStyle: TextStyle(color: ColorsManager.white),
-                  prefixIcon: Icon(Icons.email, color: ColorsManager.white),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 8.h),
-                ),
-              ),
+            CustomTextFormField(
+              controller: _emailController,
+              validator: _emailValidator,
+              keyboardType: TextInputType.emailAddress,
+              labelText: 'Email',
+              prefixIcon: Icon(Icons.email),
             ),
+            SizedBox(height: 24.h),
 
-            SizedBox(height: 30.h),
-
-            // Verify Email Button
-            SizedBox(
-              width: double.infinity,
-              height: 50.h,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorsManager.yellow,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                ),
-                onPressed: () {
-                  // TODO: Add password reset logic
-                },
-                child: Text(
-                  'Verify Email',
-                  style: TextStyle(
-                    color: ColorsManager.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.sp,
-                  ),
-                ),
-              ),
+            /// Verify Email Button
+            CustomButton(
+              text: 'Verify Email',
+              onTap: () {
+                if (!_formKey.currentState!.validate()) return;
+              },
             ),
           ],
         ),

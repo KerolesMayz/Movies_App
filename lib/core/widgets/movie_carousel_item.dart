@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
 
-import '../../data/models/Movies.dart';
+import '../../data/models/movies_response/Movies.dart';
 
 class MovieCarouselItem extends StatelessWidget {
   const MovieCarouselItem({super.key, required this.movie});

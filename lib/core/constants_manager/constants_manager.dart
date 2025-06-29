@@ -26,4 +26,8 @@ class ConstantsManager {
     'War',
     'Western',
   ];
+  static final List<String> avatarList = List.generate(
+    9,
+    (index) => 'assets/images/avatars/avatar$index.png',
+  );
 }

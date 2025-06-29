@@ -1,236 +1,299 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
-import 'package:animated_toggle_switch/animated_toggle_switch.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:movies/core/constants_manager/constants_manager.dart';
+import 'package:movies/core/routes_manager/routes_manager.dart';
+import 'package:movies/core/widgets/custom_button.dart';
+import 'package:movies/core/widgets/custom_call_for_action_widget.dart';
+import 'package:movies/core/widgets/custom_text_form_field.dart';
+import 'package:movies/core/widgets/language_toggle_switch.dart';
+import 'package:movies/data/api_services/api_services.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
 
   @override
   State<Register> createState() => _RegisterState();
-
 }
 
 class _RegisterState extends State<Register> {
   int languageValue = 0;
-  int selectedAvatar = 1;
+  int selectedAvatar = 0;
+  bool passwordVisibility = true;
+  bool confirmPasswordVisibility = true;
+  late TextEditingController _phoneController;
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late TextEditingController _confirmPasswordController;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late CarouselSliderController controller;
 
-  final List<String> avatarImages = [
-    'assets/images/avatars/avatar0.png',
-    'assets/images/avatars/avatar1.png',
-    'assets/images/avatars/avatar2.png',
-  ];
+  @override
+  void dispose() {
+    super.dispose();
+    _phoneController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    _phoneController = TextEditingController();
+    controller = CarouselSliderController();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+  }
+
+  String? _nameValidator(String? input) {
+    if (input == null || input
+        .trim()
+        .isEmpty) {
+      return 'Please inter your name';
+    } else if (input
+        .trim()
+        .length < 3) {
+      return 'please enter a name from 3 characters';
+    }
+    return null;
+  }
+
+  String? _emailValidator(String? input) {
+    if (input == null || input
+        .trim()
+        .isEmpty) {
+      return 'Please inter your email';
+    } else if (!RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]",
+    ).hasMatch(input)) {
+      return 'Please inter a valid email';
+    }
+    return null;
+  }
+
+  String? _passwordValidator(String? input) {
+    if (input == null || input
+        .trim()
+        .isEmpty) {
+      return 'Please enter your password';
+    } else if (input
+        .trim()
+        .length < 8) {
+      return 'Please enter password larger that 7';
+    } else if (!RegExp(
+      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
+    ).hasMatch(input.trim())) {
+      return 'please provide a strong password';
+    }
+    return null;
+  }
+
+  String? _confirmPasswordValidator(String? input) {
+    if (input == null || input
+        .trim()
+        .isEmpty) {
+      return 'Please enter your password confirmation';
+    } else if (input
+        .trim()
+        .length < 8) {
+      return 'Please enter password larger that 7';
+    } else if (_passwordController.text.trim() != input.trim()) {
+      return 'please enter the same password';
+    }
+    return null;
+  }
+
+  String? _phoneValidator(String? input) {
+    if (input == null || input
+        .trim()
+        .isEmpty) {
+      return 'Please inter your phone number';
+    } else if (input
+        .trim()
+        .length < 10) {
+      return 'please enter a valid phone number';
+    }
+    return null;
+  }
 
   void _changeLanguage(int newValue) {
     setState(() {
       languageValue = newValue;
-    });
-
-    // TODO: Implement localization logic
-    print(newValue == 0 ? 'English selected' : 'Arabic selected');
-  }
-
-  void _selectAvatar(int index) {
-    setState(() {
-      selectedAvatar = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Register"),
-        leading: IconButton(onPressed: (){}, icon: Icon(Icons.arrow_back)),
-      ),
-      backgroundColor: ColorsManager.black,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: AppBar(title: Text("Register")),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: REdgeInsets.symmetric(horizontal: 16, vertical: 10),
           children: [
             // Avatar Picker
-            Center(
-              child: Column(
-                children: [
-                  CarouselSlider.builder(
-                    // carouselController: ,
-                    itemCount: avatarImages.length,
-                    options: CarouselOptions(
-                      height: 100.h,
-                      enlargeCenterPage: true,
-                      viewportFraction: 0.35,
-                      onPageChanged: (index, reason) {
-                        setState(() {
-                          selectedAvatar = index;
-                        });
-                      },
-                    ),
-                    itemBuilder: (context, index, realIndex) {
-                      final isSelected = selectedAvatar == index;
-                      return GestureDetector(
-                        onTap: () => setState(() => selectedAvatar = index),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isSelected
-                                  ? ColorsManager.yellow
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
-                          ),
-                          padding: EdgeInsets.all(4.w),
-                          child: CircleAvatar(
-                            radius: isSelected ? 48.r : 40.r,
-                            backgroundImage: AssetImage(avatarImages[index]),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+            CarouselSlider.builder(
+              carouselController: controller,
+              itemCount: ConstantsManager.avatarList.length,
+              options: CarouselOptions(
+                height: 100.h,
+                enlargeCenterPage: true,
+                viewportFraction: 0.35,
+                onPageChanged: (index, _) {
+                  setState(() {
+                    selectedAvatar = index;
+                  });
+                },
               ),
+              itemBuilder: (context, index, _) {
+                bool isSelected = selectedAvatar == index;
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      selectedAvatar = index;
+                      controller.animateToPage(selectedAvatar);
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected
+                            ? ColorsManager.yellow
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                    ),
+                    padding: EdgeInsets.all(4.w),
+                    child: CircleAvatar(
+                      radius: isSelected ? 48.r : 40.r,
+                      backgroundImage: AssetImage(
+                          ConstantsManager.avatarList[index]),
+                    ),
+                  ),
+                );
+              },
             ),
             SizedBox(height: 30.h),
 
             // Name Field
-            _buildInputField(
-              label: "Name",
-              icon: Icons.person,
+            CustomTextFormField(
+              keyboardType: TextInputType.name,
+              controller: _nameController,
+              validator: _nameValidator,
+              prefixIcon: Icon(Icons.person),
+              labelText: 'Name',
             ),
             SizedBox(height: 16.h),
 
             // Email Field
-            _buildInputField(
-              label: "Email",
-              icon: Icons.email,
+            CustomTextFormField(
+              keyboardType: TextInputType.emailAddress,
+              controller: _emailController,
+              validator: _emailValidator,
+              labelText: "Email",
+              prefixIcon: Icon(Icons.email),
             ),
             SizedBox(height: 16.h),
 
             // Password
-            _buildInputField(
-              label: "Password",
-              icon: Icons.lock,
+            CustomTextFormField(
+              keyboardType: TextInputType.text,
+              controller: _passwordController,
+              validator: _passwordValidator,
+              labelText: "Password",
+              prefixIcon: Icon(Icons.lock_rounded),
               isPassword: true,
+              obscureText: passwordVisibility,
+              onVisibilityClick: () {
+                setState(() {
+                  passwordVisibility = !passwordVisibility;
+                });
+              },
             ),
             SizedBox(height: 16.h),
 
             // Confirm Password
-            _buildInputField(
-              label: "Confirm Password",
-              icon: Icons.lock,
+            CustomTextFormField(
+              keyboardType: TextInputType.text,
+              controller: _confirmPasswordController,
+              validator: _confirmPasswordValidator,
+              labelText: "Confirm Password",
+              prefixIcon: Icon(Icons.lock_rounded),
               isPassword: true,
+              obscureText: confirmPasswordVisibility,
+              onVisibilityClick: () {
+                setState(() {
+                  confirmPasswordVisibility = !confirmPasswordVisibility;
+                });
+              },
             ),
             SizedBox(height: 16.h),
 
             // Phone Number
-            _buildInputField(
-              label: "Phone Number",
-              icon: Icons.phone,
+            CustomTextFormField(
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(10),
+              ],
+              prefixText: '+20 ',
+              validator: _phoneValidator,
+              keyboardType: TextInputType.phone,
+              controller: _phoneController,
+              labelText: "Phone Number",
+              prefixIcon: Icon(Icons.phone_rounded),
             ),
             SizedBox(height: 24.h),
 
             // Create Account Button
-            SizedBox(
-              width: double.infinity,
-              height: 50.h,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorsManager.yellow,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                ),
-                onPressed: () {},
-                child: Text(
-                  'Create Account',
-                  style: TextStyle(
-                    color: ColorsManager.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.sp,
-                  ),
-                ),
-              ),
+            CustomButton(
+              text: 'Create Account',
+              onTap: () {
+                if (!_formKey.currentState!.validate()) return;
+                String phone = '+20${_phoneController.text}';
+                ApiServices.registerUserApi(
+                  name: _nameController.text,
+                  email: _emailController.text,
+                  password: _passwordController.text,
+                  confirmPassword: _confirmPasswordController.text,
+                  phoneNumber: phone,
+                  avatarId: selectedAvatar,
+                  context: context,
+                );
+              },
             ),
             SizedBox(height: 20.h),
 
             // Already have account
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Already Have Account ? ",
-                  style: TextStyle(color: ColorsManager.white),
-                ),
-                GestureDetector(
-                  onTap: () {}, // TODO: Navigate to Login
-                  child: Text(
-                    "Login",
-                    style: TextStyle(
-                      color: ColorsManager.yellow,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+            CustomCallForActionWidget(
+              callForAction: "Already Have Account ? ",
+              actionText: 'Login',
+              action: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  RoutesManager.login,
+                      (_) => false,
+                );
+              },
             ),
             SizedBox(height: 30.h),
 
             // Language Toggle
             Center(
-              child: AnimatedToggleSwitch<int>.rolling(
-                current: languageValue,
-                values: const [0, 1],
-                onChanged: _changeLanguage,
-                iconBuilder: (val, isSelected) {
-                  return val == 0
-                      ? Image.asset('assets/images/flags/lr.png',
-                      width: 24.w, height: 24.h)
-                      : Image.asset('assets/images/flags/eg.png',
-                      width: 24.w, height: 24.h);
-                },
-                style: ToggleStyle(
-                  backgroundColor: Colors.transparent,
-                  indicatorColor: ColorsManager.yellow,
-                  borderColor: ColorsManager.yellow,
-                  borderRadius: BorderRadius.circular(30.r),
-                  indicatorBorderRadius: BorderRadius.circular(30.r),
-                ),
-                spacing: 15.w,
+              child: LanguageToggleSwitch(
+                currentLanguage: languageValue,
+                changeLanguage: _changeLanguage,
               ),
             ),
             SizedBox(height: 20.h),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputField({
-    required String label,
-    required IconData icon,
-    bool isPassword = false,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: ColorsManager.lightBlack,
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: TextField(
-        obscureText: isPassword,
-        style: TextStyle(color: ColorsManager.white),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(color: ColorsManager.white),
-          prefixIcon: Icon(icon, color: ColorsManager.white),
-          suffixIcon: isPassword
-              ? Icon(Icons.visibility_off, color: ColorsManager.white)
-              : null,
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 8.h),
         ),
       ),
     );

@@ -9,7 +9,7 @@ import 'package:movies/core/widgets/custom_carousel_slider.dart';
 import 'package:movies/core/widgets/error_state_widget.dart';
 import 'package:movies/core/widgets/movie_carousel_item.dart';
 import 'package:movies/core/widgets/recommendation_movies.dart';
-import 'package:movies/providers/movies_provider.dart';
+import 'package:movies/providers/home_tab_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeTab extends StatefulWidget {
@@ -20,13 +20,13 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  late MoviesProvider _moviesProvider;
+  late HomeTabProvider _moviesProvider;
   List<String> shuffledGenres = [...ConstantsManager.genres]..shuffle();
 
   int currentMovie = 0;
 
   void loadMovies() async {
-    _moviesProvider = MoviesProvider();
+    _moviesProvider = HomeTabProvider();
     for (final genre in shuffledGenres.take(3)) {
       await _moviesProvider.getRecommendedMoviesList(
           sectionKey: genre, genre: genre);
@@ -47,7 +47,7 @@ class _HomeTabState extends State<HomeTab> {
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
-            child: Consumer<MoviesProvider>(
+            child: Consumer<HomeTabProvider>(
               builder: (context, moviesProvider, child) {
                 MoviesState state = moviesProvider.trendingState;
                 switch (state) {
@@ -103,8 +103,12 @@ class _HomeTabState extends State<HomeTab> {
           SliverToBoxAdapter(child: RecommendationMovies(
               sectionKey: shuffledGenres[1], title: shuffledGenres[1])),
           SliverToBoxAdapter(
-              child: RecommendationMovies(
-                  sectionKey: shuffledGenres[2], title: shuffledGenres[2])),
+              child: Padding(
+                padding: REdgeInsets.only(bottom: 100),
+                child: RecommendationMovies(
+                    sectionKey: shuffledGenres[2], title: shuffledGenres[2]),
+              ))
+          ,
         ],
       ),
     );

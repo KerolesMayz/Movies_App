@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
+import 'package:movies/core/constants_manager/constants_manager.dart';
+import 'package:movies/core/resources_manager/dialog_utils.dart';
+import 'package:movies/core/routes_manager/routes_manager.dart';
+import 'package:movies/core/widgets/custom_button.dart';
+import 'package:movies/core/widgets/custom_text_form_field.dart';
 
 class UpdateProfile extends StatefulWidget {
   const UpdateProfile({super.key});
@@ -10,56 +16,134 @@ class UpdateProfile extends StatefulWidget {
 }
 
 class _UpdateProfileState extends State<UpdateProfile> {
-  int selectedAvatarIndex = 0;
-  final TextEditingController nameController =
-  TextEditingController(text: 'John Safwat');
-  final TextEditingController phoneController =
-  TextEditingController(text: '01200000000');
+  int _selectedAvatarIndex = 0;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _phoneController;
+  String initName = 'John Safwat';
+  String initPhone = '+201111111111'.substring(3);
 
-  final List<String> avatarList = List.generate(
-    9,
-        (index) => 'assets/images/avatars/avatar$index.png',
-  );
+  String? _nameValidator(String? input) {
+    if (input == null || input.trim().isEmpty) {
+      return 'Please inter your name';
+    } else if (input.trim().length < 3) {
+      return 'please enter a name from 3 characters';
+    }
+    return null;
+  }
+
+  String? _phoneValidator(String? input) {
+    if (input == null || input.trim().isEmpty) {
+      return 'Please inter your phone number';
+    } else if (input.trim().length < 10) {
+      return 'please enter a valid phone number';
+    }
+    return null;
+  }
+
+  void _updateData() {
+    if (!_formKey.currentState!.validate()) return;
+    if (initName == _nameController.text &&
+        initPhone == _phoneController.text) {
+      DialogUtils.showMessageDialog(
+        context,
+        "No updates where found in email or phone",
+        positiveTitle: 'ok',
+      );
+    } else {
+      DialogUtils.showMessageDialog(
+        context,
+        "Finish and update Data ?",
+        positiveTitle: 'Yes',
+        positiveAction: () {
+          DialogUtils.showLoadingDialog(context, message: 'plz wait');
+          DialogUtils.hideDialog(context);
+          DialogUtils.showMessageDialog(
+            context,
+            'Data Updated Successfully',
+            positiveTitle: 'ok',
+          );
+        },
+        negativeTitle: 'No',
+      );
+    }
+  }
+
+  void _deleteAccount() {
+    DialogUtils.showMessageDialog(
+      context,
+      "Sure you want to Delete Account ?",
+      positiveTitle: 'Yes',
+      positiveAction: () {
+        DialogUtils.showLoadingDialog(context, message: 'plz wait');
+        DialogUtils.hideDialog(context);
+        DialogUtils.showMessageDialog(
+          context,
+          'Account Deleted Successfully',
+          negativeTitle: 'Register',
+          negativeAction: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            RoutesManager.register,
+            (_) => false,
+          ),
+          positiveTitle: 'Login',
+          positiveAction: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            RoutesManager.login,
+            (_) => false,
+          ),
+        );
+      },
+      negativeTitle: 'No',
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: initName);
+    _phoneController = TextEditingController(text: initPhone);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
+  }
 
   void _showAvatarPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: ColorsManager.mediumBlack,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
       builder: (_) => Padding(
         padding: EdgeInsets.all(16.w),
         child: GridView.builder(
           shrinkWrap: true,
-          itemCount: avatarList.length,
+          itemCount: ConstantsManager.avatarList.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
             mainAxisSpacing: 16.h,
             crossAxisSpacing: 16.w,
           ),
           itemBuilder: (context, index) {
-            return GestureDetector(
+            return InkWell(
               onTap: () {
                 setState(() {
-                  selectedAvatarIndex = index;
+                  _selectedAvatarIndex = index;
                 });
                 Navigator.pop(context);
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: ColorsManager.lightBlack,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: selectedAvatarIndex == index
-                        ? ColorsManager.yellow
-                        : Colors.transparent,
-                    width: 2.w,
-                  ),
+                  color: _selectedAvatarIndex == index
+                      ? ColorsManager.yellow.withValues(alpha: 0.56)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(color: ColorsManager.yellow, width: 1.w),
                 ),
                 padding: EdgeInsets.all(8.w),
                 child: Image.asset(
-                  avatarList[index],
+                  ConstantsManager.avatarList[index],
                   fit: BoxFit.contain,
                 ),
               ),
@@ -74,7 +158,6 @@ class _UpdateProfileState extends State<UpdateProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: ColorsManager.black,
       appBar: AppBar(
         title: const Text('Pick Avatar'),
         leading: IconButton(
@@ -82,137 +165,74 @@ class _UpdateProfileState extends State<UpdateProfile> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(height: 12.h),
-                    Center(
-                      child: GestureDetector(
-                        onTap: _showAvatarPicker,
-                        child: CircleAvatar(
-                          radius: 60.r,
-                          backgroundImage:
-                          AssetImage(avatarList[selectedAvatarIndex]),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 30.h),
-
-                    // Name
-                    Container(
-                      decoration: BoxDecoration(
-                        color: ColorsManager.lightBlack,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: TextField(
-                        controller: nameController,
-                        style: TextStyle(color: ColorsManager.white),
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.person,
-                              color: ColorsManager.white),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 8.h),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-
-                    // Phone
-                    Container(
-                      decoration: BoxDecoration(
-                        color: ColorsManager.lightBlack,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: TextField(
-                        controller: phoneController,
-                        style: TextStyle(color: ColorsManager.white),
-                        decoration: InputDecoration(
-                          prefixIcon:
-                          Icon(Icons.phone, color: ColorsManager.white),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 8.h),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-
-                    // Reset password
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Reset Password",
-                        style: TextStyle(
-                            color: ColorsManager.white, fontSize: 16.sp),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Buttons aligned to bottom
-            Column(
+      body: SafeArea(
+        child: Padding(
+          padding: REdgeInsets.only(left: 16, right: 16, bottom: 16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 10.h),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50.h,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                    ),
-                    onPressed: () {
-                      // TODO: Delete logic
-                    },
-                    child: Text(
-                      'Delete Account',
-                      style: TextStyle(
-                        color: ColorsManager.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
+                SizedBox(height: 36.h),
+                Center(
+                  child: InkWell(
+                    onTap: _showAvatarPicker,
+                    child: CircleAvatar(
+                      radius: 75.r,
+                      backgroundImage: AssetImage(
+                        ConstantsManager.avatarList[_selectedAvatarIndex],
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 10.h),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50.h,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ColorsManager.yellow,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                    ),
-                    onPressed: () {
-                      // TODO: Update logic
-                    },
-                    child: Text(
-                      'Update Data',
-                      style: TextStyle(
-                        color: ColorsManager.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
-                      ),
-                    ),
-                  ),
+                SizedBox(height: 36.h),
+
+                // Name
+                CustomTextFormField(
+                  controller: _nameController,
+                  validator: _nameValidator,
+                  prefixIcon: Icon(Icons.person),
                 ),
                 SizedBox(height: 20.h),
+
+                // Phone
+                CustomTextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
+                  prefixText: '+20 ',
+                  validator: _phoneValidator,
+                  keyboardType: TextInputType.phone,
+                  controller: _phoneController,
+                  labelText: "Phone Number",
+                  prefixIcon: Icon(Icons.phone_rounded),
+                ),
+                SizedBox(height: 30.h),
+
+                // Reset password
+                Text(
+                  "Reset Password",
+                  style: Theme.of(context).textTheme.displayMedium,
+                ),
+
+                Spacer(),
+
+                CustomButton(
+                  text: 'Delete Account',
+                  onTap: _deleteAccount,
+                  backgroundColor: Colors.red,
+                  foregroundColor: ColorsManager.white,
+                  borderColor: Colors.red,
+                ),
+                SizedBox(height: 20.h),
+
+                CustomButton(text: 'Update Data', onTap: _updateData),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
-
 }
