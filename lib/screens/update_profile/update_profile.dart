@@ -7,6 +7,7 @@ import 'package:movies/core/resources_manager/dialog_utils.dart';
 import 'package:movies/core/routes_manager/routes_manager.dart';
 import 'package:movies/core/widgets/custom_button.dart';
 import 'package:movies/core/widgets/custom_text_form_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UpdateProfile extends StatefulWidget {
   const UpdateProfile({super.key});
@@ -74,8 +75,10 @@ class _UpdateProfileState extends State<UpdateProfile> {
       context,
       "Sure you want to Delete Account ?",
       positiveTitle: 'Yes',
-      positiveAction: () {
+      positiveAction: () async {
         DialogUtils.showLoadingDialog(context, message: 'plz wait');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove('userCredentials');
         DialogUtils.hideDialog(context);
         DialogUtils.showMessageDialog(
           context,
@@ -205,7 +208,6 @@ class _UpdateProfileState extends State<UpdateProfile> {
                   validator: _phoneValidator,
                   keyboardType: TextInputType.phone,
                   controller: _phoneController,
-                  labelText: "Phone Number",
                   prefixIcon: Icon(Icons.phone_rounded),
                 ),
                 SizedBox(height: 30.h),

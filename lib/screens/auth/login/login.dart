@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
+import 'package:movies/core/resources_manager/dialog_utils.dart';
 import 'package:movies/core/routes_manager/routes_manager.dart';
 import 'package:movies/core/widgets/custom_button.dart';
 import 'package:movies/core/widgets/custom_call_for_action_widget.dart';
@@ -9,6 +12,7 @@ import 'package:movies/core/widgets/custom_text_form_field.dart';
 import 'package:movies/core/widgets/language_toggle_switch.dart';
 import 'package:movies/data/api_services/api_services.dart';
 import 'package:movies/screens/auth/login/widgets/login_with_google.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -28,9 +32,7 @@ class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? _emailValidator(String? input) {
-    if (input == null || input
-        .trim()
-        .isEmpty) {
+    if (input == null || input.trim().isEmpty) {
       return 'Please inter your email';
     } else if (!RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]",
@@ -41,13 +43,9 @@ class _LoginState extends State<Login> {
   }
 
   String? _passwordValidator(String? input) {
-    if (input == null || input
-        .trim()
-        .isEmpty) {
+    if (input == null || input.trim().isEmpty) {
       return 'Please enter your password';
-    } else if (input
-        .trim()
-        .length < 8) {
+    } else if (input.trim().length < 8) {
       return 'Please enter password larger that 7';
     } else if (!RegExp(
       r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
@@ -55,6 +53,21 @@ class _LoginState extends State<Login> {
       return 'please provide a strong password';
     }
     return null;
+  }
+
+  void getCashedUserCredentials() async {
+    DialogUtils.showLoadingDialog(context, message: 'plz wait');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? cashedJson = prefs.getString('userCredentials');
+    DialogUtils.hideDialog(context);
+    if (cashedJson != null) {
+      var credentialsJson = jsonDecode(cashedJson);
+      await ApiServices.loginUserApi(
+        email: credentialsJson['email'],
+        password: credentialsJson['password'],
+        context: context,
+      );
+    }
   }
 
   @override
@@ -71,7 +84,6 @@ class _LoginState extends State<Login> {
     _passwordController.dispose();
   }
 
-
   void _changeLanguage(int newValue) {
     setState(() {
       _currentLanguage = newValue;
@@ -80,6 +92,9 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => getCashedUserCredentials(),
+    );
     return Scaffold(
       backgroundColor: ColorsManager.black,
       body: Form(
@@ -138,12 +153,17 @@ class _LoginState extends State<Login> {
             SizedBox(height: 10.h),
 
             // Login Button
-            CustomButton(text: 'Login', onTap: () {
-              if (!_formKey.currentState!.validate()) return;
-              ApiServices.loginUserApi(email: _emailController.text,
+            CustomButton(
+              text: 'Login',
+              onTap: () {
+                if (!_formKey.currentState!.validate()) return;
+                ApiServices.loginUserApi(
+                  email: _emailController.text,
                   password: _passwordController.text,
-                  context: context);
-            }),
+                  context: context,
+                );
+              },
+            ),
             SizedBox(height: 20.h),
 
             // Create Account
@@ -159,19 +179,28 @@ class _LoginState extends State<Login> {
             // Divider with OR
             Row(
               children: [
-                Expanded(child: Divider(
-                  color: ColorsManager.yellow, indent: 80.w, endIndent: 12.w,)),
+                Expanded(
+                  child: Divider(
+                    color: ColorsManager.yellow,
+                    indent: 80.w,
+                    endIndent: 12.w,
+                  ),
+                ),
                 Text('OR', style: TextStyle(color: ColorsManager.yellow)),
-                Expanded(child: Divider(
-                  color: ColorsManager.yellow, endIndent: 80.w, indent: 12.w,)),
+                Expanded(
+                  child: Divider(
+                    color: ColorsManager.yellow,
+                    endIndent: 80.w,
+                    indent: 12.w,
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 20.h),
 
             // Google Login Button
-            LoginWithGoogle(onTap: () {},),
+            LoginWithGoogle(onTap: () {}),
             SizedBox(height: 32.h),
-
 
             // Language Toggle
             Center(

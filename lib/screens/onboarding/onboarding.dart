@@ -3,6 +3,8 @@ import 'package:movies/core/assets_manager/assets_manager.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
 import 'package:movies/core/routes_manager/routes_manager.dart';
 import 'package:movies/core/widgets/custom_onboarding_page.dart';
+import 'package:movies/providers/main_provider.dart';
+import 'package:provider/provider.dart';
 
 class Onboarding extends StatefulWidget {
   const Onboarding({super.key});
@@ -31,13 +33,15 @@ class _OnboardingState extends State<Onboarding> {
     );
   }
 
-  void goToLoginScreen() {
+  void goToLoginScreen() async {
+    var mainProvider = Provider.of<MainProvider>(context, listen: false);
     Navigator.pop(context);
     Navigator.pushNamedAndRemoveUntil(
       context,
       RoutesManager.login,
       (route) => false,
     );
+    await mainProvider.setInitialScreen();
   }
 
   @override

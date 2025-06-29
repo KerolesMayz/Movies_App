@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:movies/data/models/login_response/Login_response.dart';
 import 'package:movies/data/models/register_response/Register_response.dart';
 import 'package:movies/data/result/result.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/resources_manager/dialog_utils.dart';
 import '../../core/routes_manager/routes_manager.dart';
@@ -145,16 +146,20 @@ class ApiServices {
       );
       var json = jsonDecode(response.body);
       LoginResponse loginResponse = LoginResponse.fromJson(json);
-      DialogUtils.hideDialog(context);
       if (loginResponse.message == 'Success Login') {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userCredentials',
+            jsonEncode({'email': email, 'password': password}));
+        DialogUtils.hideDialog(context);
         LoginResponse.userToken = loginResponse.data;
         Navigator.pushNamedAndRemoveUntil(
             context, RoutesManager.homeScreen, (_) => false);
         return Success(data: loginResponse);
       } else {
+        DialogUtils.hideDialog(context);
         DialogUtils.showMessageDialog(
           context,
-          loginResponse.message.toString(),
+          'Wrong Email or Password',
           positiveTitle: 'ok',
         );
         return ServerError(
