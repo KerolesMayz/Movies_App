@@ -19,7 +19,8 @@ class HomeTabProvider extends ChangeNotifier {
     int? page,
     String? sort,
     String? genre,
-  }) async {
+  }) async
+  {
     if (trendingState.runtimeType != MoviesLoadingState) {
       emitTrending(MoviesLoadingState());
     }

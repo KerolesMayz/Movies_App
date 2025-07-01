@@ -18,17 +18,17 @@ class RoutesManager {
   static Route? router(RouteSettings settings) {
     switch (settings.name) {
       case explore:
-        return CupertinoPageRoute(builder: (context) => const Explore());
+        return CupertinoPageRoute(builder: (_) => const Explore());
       case onboarding:
-        return CupertinoPageRoute(builder: (context) => const Onboarding());
+        return CupertinoPageRoute(builder: (_) => const Onboarding());
       case login:
-        return CupertinoPageRoute(builder: (context) => const Login());
+        return CupertinoPageRoute(builder: (_) => const Login());
       case register:
-        return CupertinoPageRoute(builder: (context) => const Register());
+        return CupertinoPageRoute(builder: (_) => const Register());
       case forgetPassword:
-        return CupertinoPageRoute(builder: (context) => const ForgetPassword());
+        return CupertinoPageRoute(builder: (_) => const ForgetPassword());
       case homeScreen:
-        return CupertinoPageRoute(builder: (context) => const HomeScreen());
+        return CupertinoPageRoute(builder: (_) => const HomeScreen());
     }
     return null;
   }

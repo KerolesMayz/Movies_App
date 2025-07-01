@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:movies/core/widgets/error_state_widget.dart';
-import 'package:movies/data/models/prfile_response/profile_data.dart';
 import 'package:movies/providers/favourites_provider.dart';
 import 'package:movies/providers/profile_provider.dart';
 import 'package:movies/screens/home_screen/tabs/profile_tab/widgets/empty_list_widget.dart';
@@ -8,6 +7,8 @@ import 'package:movies/screens/home_screen/tabs/profile_tab/widgets/profile_grid
 import 'package:movies/screens/home_screen/tabs/profile_tab/widgets/profile_header_widget.dart';
 import 'package:movies/screens/home_screen/tabs/profile_tab/widgets/profile_tab_bar.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../data/models/profile_response/profile_data.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});

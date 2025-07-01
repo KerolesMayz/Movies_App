@@ -28,7 +28,7 @@ class CustomButton extends StatelessWidget {
       onPressed: onTap,
       style: FilledButton.styleFrom(
         padding: REdgeInsets.all(16),
-        textStyle: GoogleFonts.inter(
+        textStyle: GoogleFonts.roboto(
           fontSize: 20.sp,
           fontWeight: FontWeight.w600,
         ),

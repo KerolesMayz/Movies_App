@@ -35,7 +35,7 @@ class _RegisterState extends State<Register> {
   void onRegisterTap() {
     if (!_formKey.currentState!.validate()) return;
     String phone = '+20${_phoneController.text}';
-    ApiServices.registerUserApi(
+    ApiServices.registerUser(
       name: _nameController.text,
       email: _emailController.text,
       password: _passwordController.text,

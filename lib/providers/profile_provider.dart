@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:movies/data/api_services/api_services.dart';
-import 'package:movies/data/models/prfile_response/Profile_response.dart';
 
+import '../data/models/profile_response/Profile_response.dart';
 import '../data/result/result.dart';
 
 class ProfileProvider extends ChangeNotifier {

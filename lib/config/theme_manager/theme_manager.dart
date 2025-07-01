@@ -5,8 +5,43 @@ import 'package:movies/core/colors_manager/colors_Manager.dart';
 
 class ThemeManager {
   static ThemeData dark = ThemeData(
+      listTileTheme: ListTileThemeData(
+        titleTextStyle: GoogleFonts.roboto(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w400,
+            color: ColorsManager.white,
+            height: 1.8.h
+        ),
+        subtitleTextStyle: GoogleFonts.roboto(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w400,
+            color: ColorsManager.white,
+            height: 1.8.h
+        ),
+        minTileHeight: 0,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r)
+        ),
+        contentPadding: REdgeInsets.symmetric(horizontal: 12),
+        tileColor: ColorsManager.mediumBlack,
+      ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
           color: ColorsManager.yellow
+      ),
+      chipTheme: ChipThemeData(
+        padding: REdgeInsets.all(10),
+        labelStyle: GoogleFonts.roboto(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w400,
+            color: ColorsManager.white
+        ),
+        shape: RoundedRectangleBorder(
+            side: BorderSide(
+                color: ColorsManager.mediumBlack
+            ),
+            borderRadius: BorderRadius.circular(16.r)
+        ),
+        backgroundColor: ColorsManager.mediumBlack,
       ),
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: GoogleFonts.roboto(color: ColorsManager.white),
@@ -24,6 +59,8 @@ class ThemeManager {
           fillColor: ColorsManager.lightBlack
       ),
     appBarTheme: AppBarTheme(
+      elevation: 0,
+      scrolledUnderElevation: 0,
       toolbarHeight: 60.h,
       backgroundColor: ColorsManager.transparent,
       foregroundColor: ColorsManager.yellow,
@@ -65,6 +102,17 @@ class ThemeManager {
           fontWeight: FontWeight.w700,
           color: ColorsManager.white,
           fontSize: 36.sp,
+        ),
+        labelMedium: GoogleFonts.roboto(
+          fontWeight: FontWeight.w700,
+          fontSize: 24.sp,
+          color: ColorsManager.white,
+        ),
+        bodySmall: GoogleFonts.roboto(
+            fontWeight: FontWeight.w400,
+            fontSize: 16.sp,
+            color: ColorsManager.white,
+            height: 1.5.h
         )
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(

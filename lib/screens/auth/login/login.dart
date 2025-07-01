@@ -62,7 +62,7 @@ class _LoginState extends State<Login> {
     DialogUtils.hideDialog(context);
     if (cashedJson != null) {
       var credentialsJson = jsonDecode(cashedJson);
-      await ApiServices.loginUserApi(
+      await ApiServices.loginUser(
         email: credentialsJson['email'],
         password: credentialsJson['password'],
         context: context,
@@ -157,7 +157,7 @@ class _LoginState extends State<Login> {
               text: 'Login',
               onTap: () {
                 if (!_formKey.currentState!.validate()) return;
-                ApiServices.loginUserApi(
+                ApiServices.loginUser(
                   email: _emailController.text,
                   password: _passwordController.text,
                   context: context,

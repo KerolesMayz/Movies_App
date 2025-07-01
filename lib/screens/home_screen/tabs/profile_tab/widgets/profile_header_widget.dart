@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/constants_manager/constants_manager.dart';
 import 'package:movies/data/models/login_response/Login_response.dart';
-import 'package:movies/data/models/prfile_response/profile_data.dart';
 import 'package:movies/screens/update_profile/update_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +9,7 @@ import '../../../../../core/colors_manager/colors_Manager.dart';
 import '../../../../../core/resources_manager/dialog_utils.dart';
 import '../../../../../core/routes_manager/routes_manager.dart';
 import '../../../../../core/widgets/custom_button.dart';
+import '../../../../../data/models/profile_response/profile_data.dart';
 
 class ProfileHeaderWidget extends StatelessWidget {
   const ProfileHeaderWidget({

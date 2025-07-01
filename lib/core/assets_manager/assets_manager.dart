@@ -18,6 +18,10 @@ class SvgIcons {
   static const String base = "assets/icons";
   static const String explore = "$base/explore.svg";
   static const String home = "$base/home.svg";
+  static const String play = "$base/play.svg";
   static const String profile = "$base/profile.svg";
   static const String search = "$base/search.svg";
+  static const String heart = "$base/heart.svg";
+  static const String time = "$base/time.svg";
+  static const String star = "$base/star.svg";
 }

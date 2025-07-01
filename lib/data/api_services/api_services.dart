@@ -2,7 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:movies/data/models/add_to_fav_response/Add_to_favourite_response.dart';
+import 'package:movies/data/models/check_favourite_response/check_is_favourite_response.dart';
 import 'package:movies/data/models/login_response/Login_response.dart';
+import 'package:movies/data/models/movie_details_response/movie_details.dart';
+import 'package:movies/data/models/movie_details_response/movie_details_response.dart';
+import 'package:movies/data/models/movie_suggestions/movie_suggestions_response.dart';
 import 'package:movies/data/models/register_response/Register_response.dart';
 import 'package:movies/data/models/watch_list_response/favourite_movie.dart';
 import 'package:movies/data/models/watch_list_response/favourite_movies_response.dart';
@@ -13,13 +18,19 @@ import '../../core/resources_manager/dialog_utils.dart';
 import '../../core/routes_manager/routes_manager.dart';
 import '../models/movies_response/movie.dart';
 import '../models/movies_response/movies_response.dart';
-import '../models/prfile_response/Profile_response.dart';
-import '../models/prfile_response/profile_data.dart';
+import '../models/profile_response/Profile_response.dart';
+import '../models/profile_response/profile_data.dart';
+import '../models/remove_from_fav_response/remove_from_favourite_response.dart';
 
 class ApiServices {
   static const String moviesBase = 'yts.mx';
   static const String listMovies = '/api/v2/list_movies.json';
+  static const String movieDetails = '/api/v2/movie_details.json';
+  static const String movieSuggestion = '/api/v2/movie_suggestions.json';
   static const String authenticationBase = 'route-movie-apis.vercel.app';
+  static const String removeFromFavourites = 'favorites/remove/';
+  static const String checkFavourite = 'favorites/is-favorite/';
+  static const String addToFavorites = 'favorites/add';
   static const String register = 'auth/register';
   static const String login = 'auth/login';
   static const String favourites = 'favorites/all';
@@ -29,8 +40,7 @@ class ApiServices {
     int? page,
     String? sort,
     String? genre,
-  }) async
-  {
+  }) async {
     Map<String, dynamic> queryParameters = {
       'limit': '10',
       'page': page.toString(),
@@ -55,7 +65,58 @@ class ApiServices {
     }
   }
 
-  static Future<Result<RegisterResponse>> registerUserApi({
+  static Future<Result<MovieDetails>> getMovieDetails({
+    required String id,
+  }) async {
+    Map<String, dynamic> queryParameters = {
+      'movie_id': id,
+      'with_images': "true",
+      'with_cast': "true",
+    };
+    Uri uri = Uri.https(moviesBase, movieDetails, queryParameters);
+    try {
+      http.Response response = await http.get(uri);
+      var json = jsonDecode(response.body);
+      MovieDetailsResponse movieDetailsResponse = MovieDetailsResponse.fromJson(
+        json,
+      );
+      if (movieDetailsResponse.status == 'ok') {
+        return Success(data: movieDetailsResponse.data!.movie!);
+      } else {
+        return ServerError(
+          code: movieDetailsResponse.status!,
+          message: movieDetailsResponse.statusMessage!,
+        );
+      }
+    } on Exception catch (e) {
+      return GeneralException(exception: e);
+    }
+  }
+
+  static Future<Result<List<Movie>>> getMovieSuggestionsList({
+    required String id,
+  }) async {
+    Map<String, dynamic> queryParameters = {'movie_id': id};
+    Uri uri = Uri.https(moviesBase, movieSuggestion, queryParameters);
+    try {
+      http.Response response = await http.get(uri);
+      var json = jsonDecode(response.body);
+      MovieSuggestionResponse movieSuggestionResponse =
+      MovieSuggestionResponse.fromJson(json);
+      if (movieSuggestionResponse.status == 'ok') {
+        return Success(data: movieSuggestionResponse.data!.movies!);
+      } else {
+        return ServerError(
+          code: movieSuggestionResponse.status!,
+          message: movieSuggestionResponse.statusMessage!,
+        );
+      }
+    } on Exception catch (e) {
+      return GeneralException(exception: e);
+    }
+  }
+
+  static Future<Result<RegisterResponse>> registerUser({
     required String name,
     required String email,
     required String password,
@@ -63,8 +124,7 @@ class ApiServices {
     required String phoneNumber,
     required int avatarId,
     required BuildContext context,
-  }) async
-  {
+  }) async {
     var body = jsonEncode(<String, dynamic>{
       "name": name,
       "email": email,
@@ -126,12 +186,11 @@ class ApiServices {
     }
   }
 
-  static Future<Result<LoginResponse>> loginUserApi({
+  static Future<Result<LoginResponse>> loginUser({
     required String email,
     required String password,
     required BuildContext context,
-  }) async
-  {
+  }) async {
     var body = jsonEncode(<String, dynamic>{
       "email": email,
       "password": password,
@@ -153,12 +212,17 @@ class ApiServices {
       LoginResponse loginResponse = LoginResponse.fromJson(json);
       if (loginResponse.message == 'Success Login') {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userCredentials',
-            jsonEncode({'email': email, 'password': password}));
+        await prefs.setString(
+          'userCredentials',
+          jsonEncode({'email': email, 'password': password}),
+        );
         DialogUtils.hideDialog(context);
         LoginResponse.userToken = loginResponse.data;
         Navigator.pushNamedAndRemoveUntil(
-            context, RoutesManager.homeScreen, (_) => false);
+          context,
+          RoutesManager.homeScreen,
+              (_) => false,
+        );
         return Success(data: loginResponse);
       } else {
         DialogUtils.hideDialog(context);
@@ -215,7 +279,8 @@ class ApiServices {
       http.Response response = await http.get(uri, headers: headers);
       var json = jsonDecode(response.body);
       FavouriteMoviesResponse favResponse = FavouriteMoviesResponse.fromJson(
-          json);
+        json,
+      );
       if (favResponse.message == 'favourites fetched successfully') {
         return Success(data: favResponse.data!);
       } else {
@@ -229,4 +294,96 @@ class ApiServices {
     }
   }
 
+  static Future<Result<CheckIsFavouriteResponse>> checkIsFav({
+    required String id,
+  }) async {
+    Uri uri = Uri.https(authenticationBase, '$checkFavourite$id');
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${LoginResponse.userToken}',
+    };
+    try {
+      http.Response response = await http.get(uri, headers: headers);
+      var json = jsonDecode(response.body);
+      CheckIsFavouriteResponse isFavouriteResponse =
+      CheckIsFavouriteResponse.fromJson(json);
+      if (isFavouriteResponse.message ==
+          'Favourite status fetched successfully') {
+        return Success(data: isFavouriteResponse);
+      } else {
+        return ServerError(
+          code: isFavouriteResponse.statusCode.toString(),
+          message: isFavouriteResponse.message!,
+        );
+      }
+    } on Exception catch (e) {
+      return GeneralException(exception: e);
+    }
+  }
+
+  static Future<Result<AddToFavouriteResponse>> addToFavs({
+    required String id,
+    required String name,
+    required String imageUrl,
+    required String year,
+    required double rating,
+  }) async
+  {
+    Uri uri = Uri.https(authenticationBase, addToFavorites);
+    Map<String, String> headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer ${LoginResponse.userToken}',
+    };
+    var body = jsonEncode(<String, dynamic>{
+      "movieId": id,
+      "name": name,
+      "rating": rating,
+      "imageURL": imageUrl,
+      "year": year
+    });
+    try {
+      http.Response response = await http.post(
+          uri, headers: headers, body: body);
+      var json = jsonDecode(response.body);
+      AddToFavouriteResponse addToFavouriteResponse =
+      AddToFavouriteResponse.fromJson(json);
+      if (addToFavouriteResponse.message ==
+          'Added to favourite successfully') {
+        return Success(data: addToFavouriteResponse);
+      } else {
+        return ServerError(
+          code: addToFavouriteResponse.message!,
+          message: addToFavouriteResponse.message!,
+        );
+      }
+    } on Exception catch (e) {
+      return GeneralException(exception: e);
+    }
+  }
+
+  static Future<Result<RemoveFromFavouriteResponse>> removeFromFavs({
+    required String id,
+  }) async
+  {
+    Uri uri = Uri.https(authenticationBase, '$removeFromFavourites$id');
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${LoginResponse.userToken}',
+    };
+    try {
+      http.Response response = await http.delete(uri, headers: headers);
+      var json = jsonDecode(response.body);
+      RemoveFromFavouriteResponse removeFromFavouriteResponse =
+      RemoveFromFavouriteResponse.fromJson(json);
+      if (removeFromFavouriteResponse.message ==
+          'Removed from favourite successfully') {
+        return Success(data: removeFromFavouriteResponse);
+      } else {
+        return ServerError(
+          code: removeFromFavouriteResponse.statusCode.toString(),
+          message: removeFromFavouriteResponse.message!,
+        );
+      }
+    } on Exception catch (e) {
+      return GeneralException(exception: e);
+    }
+  }
 }
