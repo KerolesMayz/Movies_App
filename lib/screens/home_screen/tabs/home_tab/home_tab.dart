@@ -7,7 +7,7 @@ import 'package:movies/core/extension/context_extension.dart';
 import 'package:movies/core/widgets/animated_image_gradient_container.dart';
 import 'package:movies/core/widgets/custom_carousel_slider.dart';
 import 'package:movies/core/widgets/error_state_widget.dart';
-import 'package:movies/core/widgets/movie_carousel_item.dart';
+import 'package:movies/core/widgets/movie_card.dart';
 import 'package:movies/core/widgets/recommendation_movies.dart';
 import 'package:movies/providers/home_tab_provider.dart';
 import 'package:provider/provider.dart';
@@ -27,11 +27,16 @@ class _HomeTabState extends State<HomeTab> {
 
   void loadMovies() async {
     _moviesProvider = HomeTabProvider();
-    for (final genre in shuffledGenres.take(3)) {
-      await _moviesProvider.getRecommendedMoviesList(
-          sectionKey: genre, genre: genre);
-    }
     await _moviesProvider.getTrendingMoviesList();
+    await _moviesProvider.getFirstRecommendedMoviesList(
+      genre: shuffledGenres[0],
+    );
+    await _moviesProvider.getSecondRecommendedMoviesList(
+      genre: shuffledGenres[1],
+    );
+    await _moviesProvider.getThirdRecommendedMoviesList(
+      genre: shuffledGenres[2],
+    );
   }
 
   @override
@@ -44,71 +49,123 @@ class _HomeTabState extends State<HomeTab> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _moviesProvider,
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Consumer<HomeTabProvider>(
-              builder: (context, moviesProvider, child) {
-                MoviesState state = moviesProvider.trendingState;
-                switch (state) {
-                  case MoviesSuccessState():
-                    return SizedBox(
-                      height: context.height * 0.72,
-                      child: Stack(
-                        children: [
-                          AnimatedImageGradientContainer(
-                            imageUrl:
-                            state.movies[currentMovie].largeCoverImage!,
-                          ),
-                          Column(
-                            children: [
-                              Image.asset(
-                                AssetsManager.availableNow, width: 260.w,),
-                              CustomCarouselSlider(
-                                items: state.movies
-                                    .map(
-                                      (movie) =>
-                                      MovieCarouselItem(movie: movie),
-                                )
-                                    .toList(),
-                                onPageChanged: (index, _) {
-                                  setState(() {
-                                    currentMovie = index;
-                                  });
-                                },
-                              ),
-                              Image.asset(AssetsManager.watchNow, width: 350.w),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  case MoviesLoadingState():
-                    return Center(
+      child: ListView(
+        children: [
+          Consumer<HomeTabProvider>(
+            builder: (context, moviesProvider, child) {
+              MoviesState state = moviesProvider.trendingState;
+              switch (state) {
+                case MoviesSuccessState():
+                  return SizedBox(
+                    height: context.height * 0.72,
+                    child: Stack(
+                      children: [
+                        AnimatedImageGradientContainer(
+                          imageUrl:
+                          state.movies[currentMovie].largeCoverImage!,
+                        ),
+                        Column(
+                          children: [
+                            Image.asset(
+                              AssetsManager.availableNow,
+                              width: 260.w,
+                            ),
+                            CustomCarouselSlider(
+                              items: state.movies
+                                  .map(
+                                    (movie) =>
+                                    MovieCard(
+                                      imageUrl: movie.mediumCoverImage!,
+                                      rating: movie.rating,
+                                      id: movie.id.toString(),
+                                      radius: 20.r,
+                                      fit: BoxFit.fill,
+                                    ),
+                              )
+                                  .toList(),
+                              onPageChanged: (index, _) {
+                                setState(() {
+                                  currentMovie = index;
+                                });
+                              },
+                            ),
+                            Image.asset(AssetsManager.watchNow, width: 350.w),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                case MoviesLoadingState():
+                  return SizedBox(
+                    height: 100.h,
+                    child: Center(
                       child: CircularProgressIndicator(
                         color: ColorsManager.yellow,
                       ),
-                    );
-                  case MoviesErrorState():
-                    return ErrorStateWidget(
-                      serverError: state.serverError,
-                      exception: state.exception,
-                    );
-                }
-              },
-            ),
+                    ),
+                  );
+                case MoviesErrorState():
+                  return ErrorStateWidget(
+                    serverError: state.serverError,
+                    exception: state.exception,
+                  );
+              }
+            },
           ),
-          SliverToBoxAdapter(child: RecommendationMovies(
-              sectionKey: shuffledGenres[0], title: shuffledGenres[0])),
-          SliverToBoxAdapter(child: RecommendationMovies(
-              sectionKey: shuffledGenres[1], title: shuffledGenres[1])),
-          SliverToBoxAdapter(
-              child: Padding(
-                padding: REdgeInsets.only(bottom: 100),
-                child: RecommendationMovies(
-                    sectionKey: shuffledGenres[2], title: shuffledGenres[2]),
-              ))
-          ,
+          Consumer<HomeTabProvider>(
+            builder: (_, provider, _) {
+              var state = provider.firstRecommendationState;
+              switch (state) {
+                case MoviesSuccessState():
+                  return RecommendationMovies(
+                      movies: state.movies, title: shuffledGenres[0]);
+                case MoviesLoadingState():
+                  return SizedBox(height: 100.h,
+                      child: Center(child: CircularProgressIndicator()));
+                case MoviesErrorState():
+                  return ErrorStateWidget(
+                    serverError: state.serverError,
+                    exception: state.exception,
+                  );
+              }
+            },
+          ),
+          Consumer<HomeTabProvider>(
+            builder: (_, provider, _) {
+              var state = provider.secondRecommendationState;
+              switch (state) {
+                case MoviesSuccessState():
+                  return RecommendationMovies(
+                      movies: state.movies, title: shuffledGenres[1]);
+                case MoviesLoadingState():
+                  return SizedBox(height: 100.h,
+                      child: Center(child: CircularProgressIndicator()));
+                case MoviesErrorState():
+                  return ErrorStateWidget(
+                    serverError: state.serverError,
+                    exception: state.exception,
+                  );
+              }
+            },
+          ),
+          Consumer<HomeTabProvider>(
+            builder: (_, provider, _) {
+              var state = provider.thirdRecommendationState;
+              switch (state) {
+                case MoviesSuccessState():
+                  return RecommendationMovies(
+                      movies: state.movies, title: shuffledGenres[2]);
+                case MoviesLoadingState():
+                  return SizedBox(height: 100,
+                      child: Center(child: CircularProgressIndicator()));
+                case MoviesErrorState():
+                  return ErrorStateWidget(
+                    serverError: state.serverError,
+                    exception: state.exception,
+                  );
+              }
+            },
+          ),
         ],
       ),
     );

@@ -4,7 +4,6 @@ import 'package:movies/screens/auth/login/login.dart';
 import 'package:movies/screens/auth/register/register.dart';
 import 'package:movies/screens/explore/explore.dart';
 import 'package:movies/screens/onboarding/onboarding.dart';
-import 'package:movies/screens/update_profile/update_profile.dart';
 
 import '../../screens/home_screen/home_screen.dart';
 
@@ -15,7 +14,6 @@ class RoutesManager {
   static const String register = '/register';
   static const String forgetPassword = '/forgetPassword';
   static const String homeScreen = '/homeScreen';
-  static const String updateProfile = '/updateProfile';
 
   static Route? router(RouteSettings settings) {
     switch (settings.name) {
@@ -31,8 +29,6 @@ class RoutesManager {
         return CupertinoPageRoute(builder: (context) => const ForgetPassword());
       case homeScreen:
         return CupertinoPageRoute(builder: (context) => const HomeScreen());
-      case updateProfile:
-        return CupertinoPageRoute(builder: (context) => const UpdateProfile());
     }
     return null;
   }

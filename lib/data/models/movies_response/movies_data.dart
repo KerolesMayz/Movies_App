@@ -1,16 +1,16 @@
-import 'Movies.dart';
+import 'movie.dart';
 
-class Data {
-  Data({this.movieCount, this.limit, this.pageNumber, this.movies});
+class MoviesData {
+  MoviesData({this.movieCount, this.limit, this.pageNumber, this.movies});
 
-  Data.fromJson(dynamic json) {
+  MoviesData.fromJson(dynamic json) {
     movieCount = json['movie_count'];
     limit = json['limit'];
     pageNumber = json['page_number'];
     if (json['movies'] != null) {
       movies = [];
       json['movies'].forEach((v) {
-        movies?.add(Movies.fromJson(v));
+        movies?.add(Movie.fromJson(v));
       });
     }
   }
@@ -18,7 +18,7 @@ class Data {
   num? movieCount;
   num? limit;
   num? pageNumber;
-  List<Movies>? movies;
+  List<Movie>? movies;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

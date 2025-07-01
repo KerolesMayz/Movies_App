@@ -11,7 +11,8 @@ class CustomButton extends StatelessWidget {
     this.onTap,
     this.foregroundColor = ColorsManager.black,
     this.backgroundColor = ColorsManager.yellow,
-    this.borderColor = ColorsManager.yellow
+    this.borderColor = ColorsManager.yellow,
+    this.child,
   });
 
   final String text;
@@ -19,6 +20,7 @@ class CustomButton extends StatelessWidget {
   final Color backgroundColor;
   final Color foregroundColor;
   final Color borderColor;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,10 @@ class CustomButton extends StatelessWidget {
       onPressed: onTap,
       style: FilledButton.styleFrom(
         padding: REdgeInsets.all(16),
+        textStyle: GoogleFonts.inter(
+          fontSize: 20.sp,
+          fontWeight: FontWeight.w600,
+        ),
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
         shape: RoundedRectangleBorder(
@@ -33,10 +39,11 @@ class CustomButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.r),
         ),
       ),
-      child: Text(
-        text,
-        style: GoogleFonts.inter(fontSize: 20.sp, fontWeight: FontWeight.w600),
-      ),
+      child:
+      child ??
+          Text(
+            text,
+          ),
     );
   }
 }

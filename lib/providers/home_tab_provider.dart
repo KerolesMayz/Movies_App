@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:movies/data/api_services/api_services.dart';
 
-import '../data/models/movies_response/Movies.dart';
+import '../data/models/movies_response/movie.dart';
 import '../data/result/result.dart';
 
 class HomeTabProvider extends ChangeNotifier {
   MoviesState trendingState = MoviesLoadingState();
-  Map<String, MoviesState> recommendedStates = {};
-  Map<String, List<Movies>> recommendedLists = {};
+  MoviesState firstRecommendationState = MoviesLoadingState();
+  MoviesState secondRecommendationState = MoviesLoadingState();
+  MoviesState thirdRecommendationState = MoviesLoadingState();
 
   void emitTrending(MoviesState newState) {
     trendingState = newState;
-    notifyListeners();
-  }
-
-  void emitRecommended(String sectionKey, MoviesState newState) {
-    recommendedStates[sectionKey] = newState;
     notifyListeners();
   }
 
@@ -27,38 +23,79 @@ class HomeTabProvider extends ChangeNotifier {
     if (trendingState.runtimeType != MoviesLoadingState) {
       emitTrending(MoviesLoadingState());
     }
-    Result<List<Movies>> result = await ApiServices.getMoviesList(
+    Result<List<Movie>> result = await ApiServices.getMoviesList(
       page: page,
       sort: sort,
       genre: genre,
     );
     switch (result) {
-      case Success<List<Movies>>():
+      case Success<List<Movie>>():
         emitTrending(MoviesSuccessState(movies: result.data));
-      case ServerError<List<Movies>>():
+      case ServerError<List<Movie>>():
         emitTrending(MoviesErrorState(serverError: result));
-      case GeneralException<List<Movies>>():
+      case GeneralException<List<Movie>>():
         emitTrending(MoviesErrorState(exception: result.exception));
     }
   }
 
-  Future<void> getRecommendedMoviesList({
-    required String sectionKey,
-    String? genre,
-  }) async {
+  Future<void> getFirstRecommendedMoviesList({String? genre}) async {
+    print(genre);
+    if (firstRecommendationState != MoviesLoadingState()) {
+      firstRecommendationState = MoviesLoadingState();
+      notifyListeners();
+    }
     final movies = await ApiServices.getMoviesList(genre: genre);
 
     switch (movies) {
-      case Success<List<Movies>>():
-        recommendedLists[sectionKey] = movies.data;
-        emitRecommended(sectionKey, MoviesSuccessState(movies: movies.data));
-      case ServerError<List<Movies>>():
-        emitRecommended(sectionKey, MoviesErrorState(serverError: movies));
-      case GeneralException<List<Movies>>():
-        emitRecommended(
-          sectionKey,
-          MoviesErrorState(exception: movies.exception),
+      case Success<List<Movie>>():
+        firstRecommendationState = MoviesSuccessState(movies: movies.data);
+      case ServerError<List<Movie>>():
+        firstRecommendationState = MoviesErrorState(serverError: movies);
+      case GeneralException<List<Movie>>():
+        firstRecommendationState = MoviesErrorState(
+          exception: movies.exception,
         );
+    }
+    notifyListeners();
+  }
+
+  Future<void> getSecondRecommendedMoviesList({String? genre}) async {
+    print(genre);
+    if (secondRecommendationState != MoviesLoadingState()) {
+      secondRecommendationState = MoviesLoadingState();
+      notifyListeners();
+    }
+    final movies = await ApiServices.getMoviesList(genre: genre);
+
+    switch (movies) {
+      case Success<List<Movie>>():
+        secondRecommendationState = MoviesSuccessState(movies: movies.data);
+      case ServerError<List<Movie>>():
+        secondRecommendationState = MoviesErrorState(serverError: movies);
+      case GeneralException<List<Movie>>():
+        secondRecommendationState = MoviesErrorState(
+          exception: movies.exception,
+        );
+    }
+    notifyListeners();
+  }
+
+  Future<void> getThirdRecommendedMoviesList({String? genre}) async {
+    print(genre);
+    if (thirdRecommendationState != MoviesLoadingState()) {
+      thirdRecommendationState = MoviesLoadingState();
+      notifyListeners();
+    }
+    final movies = await ApiServices.getMoviesList(genre: genre);
+
+    switch (movies) {
+      case Success<List<Movie>>():
+        thirdRecommendationState = MoviesSuccessState(movies: movies.data);
+      case ServerError<List<Movie>>():
+        thirdRecommendationState = MoviesErrorState(serverError: movies);
+      case GeneralException<List<Movie>>():
+        thirdRecommendationState =
+            MoviesErrorState(exception: movies.exception);
     }
     notifyListeners();
   }
@@ -67,7 +104,7 @@ class HomeTabProvider extends ChangeNotifier {
 sealed class MoviesState {}
 
 class MoviesSuccessState extends MoviesState {
-  List<Movies> movies;
+  List<Movie> movies;
 
   MoviesSuccessState({required this.movies});
 }

@@ -42,6 +42,7 @@ dependencies:
   carousel_slider: ^5.1.1
   provider: ^6.1.5
   shared_preferences: ^2.5.3
+  lottie: ^3.3.1
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +74,7 @@ flutter:
     - assets/images/onboarding/
     - assets/images/flags/
     - assets/images/avatars/
+    - assets/animations/
     - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -5,11 +5,23 @@ import 'package:movies/core/colors_manager/colors_Manager.dart';
 
 class ThemeManager {
   static ThemeData dark = ThemeData(
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+          color: ColorsManager.yellow
+      ),
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: GoogleFonts.roboto(color: ColorsManager.white),
+          contentPadding: REdgeInsets.symmetric(vertical: 14, horizontal: 0),
         prefixIconColor: ColorsManager.white,
+          errorStyle: GoogleFonts.roboto(fontSize: 14.sp, color: Colors.red),
         suffixIconColor: ColorsManager.white,
         border: InputBorder.none,
+          prefixStyle: GoogleFonts.roboto(
+            fontSize: 16.sp,
+            color: ColorsManager.white,
+            fontWeight: FontWeight.w400,
+          ),
+          filled: true,
+          fillColor: ColorsManager.lightBlack
       ),
     appBarTheme: AppBarTheme(
       toolbarHeight: 60.h,
@@ -43,6 +55,16 @@ class ThemeManager {
           fontWeight: FontWeight.w400,
           color: ColorsManager.white,
           fontSize: 20.sp,
+        ),
+        headlineMedium: GoogleFonts.roboto(
+          fontWeight: FontWeight.w700,
+          color: ColorsManager.white,
+          fontSize: 20.sp,
+        ),
+        headlineLarge: GoogleFonts.roboto(
+          fontWeight: FontWeight.w700,
+          color: ColorsManager.white,
+          fontSize: 36.sp,
         )
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -52,7 +74,7 @@ class ThemeManager {
       showSelectedLabels: false,
     ),
     bottomAppBarTheme: BottomAppBarTheme(
-      height: 60.h,
+      height: 70.h,
       padding: EdgeInsets.zero,
       color: ColorsManager.transparent,
     ),

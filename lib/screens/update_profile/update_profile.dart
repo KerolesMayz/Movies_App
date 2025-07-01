@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
 import 'package:movies/core/constants_manager/constants_manager.dart';
+import 'package:movies/core/functions/validators.dart';
 import 'package:movies/core/resources_manager/dialog_utils.dart';
 import 'package:movies/core/routes_manager/routes_manager.dart';
 import 'package:movies/core/widgets/custom_button.dart';
@@ -10,45 +11,35 @@ import 'package:movies/core/widgets/custom_text_form_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UpdateProfile extends StatefulWidget {
-  const UpdateProfile({super.key});
+  const UpdateProfile({
+    super.key,
+    required this.name,
+    required this.phoneNumber,
+    required this.avatarIndex,
+  });
+
+  final String name;
+  final String phoneNumber;
+  final int avatarIndex;
 
   @override
   State<UpdateProfile> createState() => _UpdateProfileState();
 }
 
 class _UpdateProfileState extends State<UpdateProfile> {
-  int _selectedAvatarIndex = 0;
+  late int _selectedAvatarIndex;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
-  String initName = 'John Safwat';
-  String initPhone = '+201111111111'.substring(3);
-
-  String? _nameValidator(String? input) {
-    if (input == null || input.trim().isEmpty) {
-      return 'Please inter your name';
-    } else if (input.trim().length < 3) {
-      return 'please enter a name from 3 characters';
-    }
-    return null;
-  }
-
-  String? _phoneValidator(String? input) {
-    if (input == null || input.trim().isEmpty) {
-      return 'Please inter your phone number';
-    } else if (input.trim().length < 10) {
-      return 'please enter a valid phone number';
-    }
-    return null;
-  }
 
   void _updateData() {
     if (!_formKey.currentState!.validate()) return;
-    if (initName == _nameController.text &&
-        initPhone == _phoneController.text) {
+    if (_nameController.text == widget.name &&
+        _phoneController.text == widget.phoneNumber.substring(3) &&
+        _selectedAvatarIndex == widget.avatarIndex) {
       DialogUtils.showMessageDialog(
         context,
-        "No updates where found in email or phone",
+        "No updates where found in email, phone or avatar",
         positiveTitle: 'ok',
       );
     } else {
@@ -104,8 +95,11 @@ class _UpdateProfileState extends State<UpdateProfile> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: initName);
-    _phoneController = TextEditingController(text: initPhone);
+    _selectedAvatarIndex = widget.avatarIndex;
+    _nameController = TextEditingController(text: widget.name);
+    _phoneController = TextEditingController(
+      text: widget.phoneNumber.substring(3),
+    );
   }
 
   @override
@@ -161,13 +155,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: const Text('Pick Avatar'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Pick Avatar')),
       body: SafeArea(
         child: Padding(
           padding: REdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -193,7 +181,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                 // Name
                 CustomTextFormField(
                   controller: _nameController,
-                  validator: _nameValidator,
+                  validator: Validators.nameValidator,
                   prefixIcon: Icon(Icons.person),
                 ),
                 SizedBox(height: 20.h),
@@ -205,7 +193,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                     LengthLimitingTextInputFormatter(10),
                   ],
                   prefixText: '+20 ',
-                  validator: _phoneValidator,
+                  validator: Validators.phoneValidator,
                   keyboardType: TextInputType.phone,
                   controller: _phoneController,
                   prefixIcon: Icon(Icons.phone_rounded),

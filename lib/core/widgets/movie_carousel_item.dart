@@ -3,12 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
 
-import '../../data/models/movies_response/Movies.dart';
+import '../../data/models/movies_response/movie.dart';
 
 class MovieCarouselItem extends StatelessWidget {
   const MovieCarouselItem({super.key, required this.movie});
 
-  final Movies movie;
+  final Movie movie;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,6 @@ class MovieCarouselItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(20.r),
           child: Image.network(
             movie.mediumCoverImage!,
-            height: 350.h,
             fit: BoxFit.fitHeight,
           ),
         ),

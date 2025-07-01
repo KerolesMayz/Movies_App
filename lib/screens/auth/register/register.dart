@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
 import 'package:movies/core/constants_manager/constants_manager.dart';
+import 'package:movies/core/functions/validators.dart';
 import 'package:movies/core/routes_manager/routes_manager.dart';
 import 'package:movies/core/widgets/custom_button.dart';
 import 'package:movies/core/widgets/custom_call_for_action_widget.dart';
@@ -31,6 +32,20 @@ class _RegisterState extends State<Register> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late CarouselSliderController controller;
 
+  void onRegisterTap() {
+    if (!_formKey.currentState!.validate()) return;
+    String phone = '+20${_phoneController.text}';
+    ApiServices.registerUserApi(
+      name: _nameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      confirmPassword: _confirmPasswordController.text,
+      phoneNumber: phone,
+      avatarId: selectedAvatar,
+      context: context,
+    );
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -52,73 +67,13 @@ class _RegisterState extends State<Register> {
     _confirmPasswordController = TextEditingController();
   }
 
-  String? _nameValidator(String? input) {
-    if (input == null || input
-        .trim()
-        .isEmpty) {
-      return 'Please inter your name';
-    } else if (input
-        .trim()
-        .length < 3) {
-      return 'please enter a name from 3 characters';
-    }
-    return null;
-  }
-
-  String? _emailValidator(String? input) {
-    if (input == null || input
-        .trim()
-        .isEmpty) {
-      return 'Please inter your email';
-    } else if (!RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]",
-    ).hasMatch(input)) {
-      return 'Please inter a valid email';
-    }
-    return null;
-  }
-
-  String? _passwordValidator(String? input) {
-    if (input == null || input
-        .trim()
-        .isEmpty) {
-      return 'Please enter your password';
-    } else if (input
-        .trim()
-        .length < 8) {
-      return 'Please enter password larger that 7';
-    } else if (!RegExp(
-      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
-    ).hasMatch(input.trim())) {
-      return 'please provide a strong password';
-    }
-    return null;
-  }
-
   String? _confirmPasswordValidator(String? input) {
-    if (input == null || input
-        .trim()
-        .isEmpty) {
+    if (input == null || input.trim().isEmpty) {
       return 'Please enter your password confirmation';
-    } else if (input
-        .trim()
-        .length < 8) {
+    } else if (input.trim().length < 8) {
       return 'Please enter password larger that 7';
     } else if (_passwordController.text.trim() != input.trim()) {
       return 'please enter the same password';
-    }
-    return null;
-  }
-
-  String? _phoneValidator(String? input) {
-    if (input == null || input
-        .trim()
-        .isEmpty) {
-      return 'Please inter your phone number';
-    } else if (input
-        .trim()
-        .length < 10) {
-      return 'please enter a valid phone number';
     }
     return null;
   }
@@ -175,7 +130,8 @@ class _RegisterState extends State<Register> {
                     child: CircleAvatar(
                       radius: isSelected ? 48.r : 40.r,
                       backgroundImage: AssetImage(
-                          ConstantsManager.avatarList[index]),
+                        ConstantsManager.avatarList[index],
+                      ),
                     ),
                   ),
                 );
@@ -187,7 +143,7 @@ class _RegisterState extends State<Register> {
             CustomTextFormField(
               keyboardType: TextInputType.name,
               controller: _nameController,
-              validator: _nameValidator,
+              validator: Validators.nameValidator,
               prefixIcon: Icon(Icons.person),
               labelText: 'Name',
             ),
@@ -197,7 +153,7 @@ class _RegisterState extends State<Register> {
             CustomTextFormField(
               keyboardType: TextInputType.emailAddress,
               controller: _emailController,
-              validator: _emailValidator,
+              validator: Validators.emailValidator,
               labelText: "Email",
               prefixIcon: Icon(Icons.email),
             ),
@@ -207,7 +163,7 @@ class _RegisterState extends State<Register> {
             CustomTextFormField(
               keyboardType: TextInputType.text,
               controller: _passwordController,
-              validator: _passwordValidator,
+              validator: Validators.passwordValidator,
               labelText: "Password",
               prefixIcon: Icon(Icons.lock_rounded),
               isPassword: true,
@@ -244,7 +200,7 @@ class _RegisterState extends State<Register> {
                 LengthLimitingTextInputFormatter(10),
               ],
               prefixText: '+20 ',
-              validator: _phoneValidator,
+              validator: Validators.phoneValidator,
               keyboardType: TextInputType.phone,
               controller: _phoneController,
               labelText: "Phone Number",
@@ -253,22 +209,7 @@ class _RegisterState extends State<Register> {
             SizedBox(height: 24.h),
 
             // Create Account Button
-            CustomButton(
-              text: 'Create Account',
-              onTap: () {
-                if (!_formKey.currentState!.validate()) return;
-                String phone = '+20${_phoneController.text}';
-                ApiServices.registerUserApi(
-                  name: _nameController.text,
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                  confirmPassword: _confirmPasswordController.text,
-                  phoneNumber: phone,
-                  avatarId: selectedAvatar,
-                  context: context,
-                );
-              },
-            ),
+            CustomButton(text: 'Create Account', onTap: onRegisterTap),
             SizedBox(height: 20.h),
 
             // Already have account
@@ -279,7 +220,7 @@ class _RegisterState extends State<Register> {
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   RoutesManager.login,
-                      (_) => false,
+                  (_) => false,
                 );
               },
             ),

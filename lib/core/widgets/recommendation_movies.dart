@@ -2,29 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movies/core/extension/context_extension.dart';
-import 'package:movies/core/widgets/error_state_widget.dart';
-import 'package:provider/provider.dart';
+import 'package:movies/core/widgets/movie_card.dart';
+import 'package:movies/data/models/movies_response/movie.dart';
 
-import '../../providers/home_tab_provider.dart';
 import '../colors_manager/colors_Manager.dart';
-
 class RecommendationMovies extends StatelessWidget {
   const RecommendationMovies({
     super.key,
-    required this.title,
-    required this.sectionKey,
+    required this.movies,
+    required this.title
   });
-
-  final String sectionKey;
   final String title;
+  final List<Movie> movies;
+
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<HomeTabProvider>(context);
-    final state = provider.recommendedStates[sectionKey];
-    final movies = provider.recommendedLists[sectionKey] ?? [];
-    switch (state) {
-      case MoviesSuccessState():
         return Column(
           children: [
             Padding(
@@ -60,50 +53,12 @@ class RecommendationMovies extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 padding: REdgeInsets.symmetric(horizontal: 16),
                 itemBuilder: (context, index) {
-                  return Container(
-                    alignment: Alignment.topLeft,
-                    padding: REdgeInsets.all(14),
+                  return MovieCard(
+                    imageUrl: movies[index].mediumCoverImage!,
+                    rating: movies[index].rating,
+                    id: movies[index].id.toString(),
                     width: 146.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      image: DecorationImage(
-                        fit: BoxFit.fitWidth,
-                        image: NetworkImage(movies[index].mediumCoverImage!),
-                      ),
-                    ),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      margin: EdgeInsets.zero,
-                      color: ColorsManager.black.withValues(alpha: 0.29),
-                      child: Padding(
-                        padding: REdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 6,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              movies[index].rating.toString(),
-                              style: GoogleFonts.roboto(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16.sp,
-                                color: ColorsManager.white,
-                              ),
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: ColorsManager.yellow,
-                              size: 15.r,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    fit: BoxFit.fill,
                   );
                 },
                 separatorBuilder: (context, index) {
@@ -114,19 +69,5 @@ class RecommendationMovies extends StatelessWidget {
             ),
           ],
         );
-      case MoviesLoadingState():
-        return Center(
-          child: CircularProgressIndicator(color: ColorsManager.yellow),
-        );
-      case MoviesErrorState():
-        return ErrorStateWidget(
-          serverError: state.serverError,
-          exception: state.exception,
-        );
-      case null:
-        return Center(
-          child: CircularProgressIndicator(color: ColorsManager.yellow),
-        );
-    }
   }
 }

@@ -21,8 +21,8 @@ class AnimatedImageGradientContainer extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             bottomGradientColor.withValues(alpha: 1),
-            bottomGradientColor.withValues(alpha: 0.97),
-            bottomGradientColor.withValues(alpha: 0),
+            bottomGradientColor.withValues(alpha: 0.6),
+            bottomGradientColor.withValues(alpha: 0.8),
           ],
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,

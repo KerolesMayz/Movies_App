@@ -18,7 +18,7 @@ class ConstantsManager {
     'News',
     'Reality-TV',
     'Romance',
-    'Sci‑Fi',
+    'Sci-fi',
     'Short',
     'Sport',
     'Talk-Show',

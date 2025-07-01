@@ -35,36 +35,36 @@ class CustomTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: ColorsManager.lightBlack,
-        borderRadius: BorderRadius.circular(12.r),
+    return TextFormField(
+      keyboardType: keyboardType,
+      maxLength: maxLength,
+      controller: controller,
+      validator: validator,
+      obscureText: obscureText,
+      inputFormatters: inputFormatters,
+      style: GoogleFonts.roboto(
+        fontSize: 16.sp,
+        color: ColorsManager.white,
+        fontWeight: FontWeight.w400,
       ),
-      child: TextFormField(
-        keyboardType: keyboardType,
-        maxLength: maxLength,
-        controller: controller,
-        validator: validator,
-        obscureText: obscureText,
-        inputFormatters: inputFormatters,
-        style: TextStyle(color: ColorsManager.white),
-        decoration: InputDecoration(
-          errorStyle: GoogleFonts.roboto(fontSize: 14.sp, color: Colors.red),
-          prefixText: prefixText,
-          labelText: labelText,
-          prefixIcon: prefixIcon,
-          suffixIcon: isPassword
-              ? IconButton(
-                  onPressed: onVisibilityClick,
-                  icon: Icon(
-                    obscureText
-                        ? Icons.visibility_off_rounded
-                        : Icons.visibility_rounded,
-                  ),
-                )
-              : null,
-          contentPadding: REdgeInsets.symmetric(vertical: 14, horizontal: 0),
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(16.r)
         ),
+        prefixText: prefixText,
+        labelText: labelText,
+        prefixIcon: prefixIcon,
+        suffixIcon: isPassword
+            ? IconButton(
+          onPressed: onVisibilityClick,
+          icon: Icon(
+            obscureText
+                ? Icons.visibility_off_rounded
+                : Icons.visibility_rounded,
+          ),
+        )
+            : null,
       ),
     );
   }
