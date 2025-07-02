@@ -1,5 +1,6 @@
 class AssetsManager {
   static const String base = "assets/images";
+  static const String logo = "$base/logo.png";
   static const String availableNow = "$base/available_now.png";
   static const String watchNow = "$base/watch_now.png";
 }

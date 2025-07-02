@@ -9,7 +9,7 @@ class ProfileResponse {
     statusCode = json['statusCode'];
   }
 
-  String? message;
+  dynamic message;
   ProfileData? data;
   num? statusCode;
 

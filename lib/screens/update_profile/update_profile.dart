@@ -5,10 +5,10 @@ import 'package:movies/core/colors_manager/colors_Manager.dart';
 import 'package:movies/core/constants_manager/constants_manager.dart';
 import 'package:movies/core/functions/validators.dart';
 import 'package:movies/core/resources_manager/dialog_utils.dart';
-import 'package:movies/core/routes_manager/routes_manager.dart';
 import 'package:movies/core/widgets/custom_button.dart';
 import 'package:movies/core/widgets/custom_text_form_field.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:movies/providers/edit_profile_provider.dart';
+import 'package:provider/provider.dart';
 
 class UpdateProfile extends StatefulWidget {
   const UpdateProfile({
@@ -27,12 +27,13 @@ class UpdateProfile extends StatefulWidget {
 }
 
 class _UpdateProfileState extends State<UpdateProfile> {
+  late EditProfileProvider _editProfileProvider;
   late int _selectedAvatarIndex;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
 
-  void _updateData() {
+  void _updateData() async {
     if (!_formKey.currentState!.validate()) return;
     if (_nameController.text == widget.name &&
         _phoneController.text == widget.phoneNumber.substring(3) &&
@@ -43,58 +44,20 @@ class _UpdateProfileState extends State<UpdateProfile> {
         positiveTitle: 'ok',
       );
     } else {
-      DialogUtils.showMessageDialog(
+      String phone = '+20${_phoneController.text}';
+      await _editProfileProvider.update(
         context,
-        "Finish and update Data ?",
-        positiveTitle: 'Yes',
-        positiveAction: () {
-          DialogUtils.showLoadingDialog(context, message: 'plz wait');
-          DialogUtils.hideDialog(context);
-          DialogUtils.showMessageDialog(
-            context,
-            'Data Updated Successfully',
-            positiveTitle: 'ok',
-          );
-        },
-        negativeTitle: 'No',
+        name: _nameController.text,
+        phone: phone,
+        avatarId: _selectedAvatarIndex,
       );
     }
-  }
-
-  void _deleteAccount() {
-    DialogUtils.showMessageDialog(
-      context,
-      "Sure you want to Delete Account ?",
-      positiveTitle: 'Yes',
-      positiveAction: () async {
-        DialogUtils.showLoadingDialog(context, message: 'plz wait');
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.remove('userCredentials');
-        DialogUtils.hideDialog(context);
-        DialogUtils.showMessageDialog(
-          context,
-          'Account Deleted Successfully',
-          negativeTitle: 'Register',
-          negativeAction: () => Navigator.pushNamedAndRemoveUntil(
-            context,
-            RoutesManager.register,
-            (_) => false,
-          ),
-          positiveTitle: 'Login',
-          positiveAction: () => Navigator.pushNamedAndRemoveUntil(
-            context,
-            RoutesManager.login,
-            (_) => false,
-          ),
-        );
-      },
-      negativeTitle: 'No',
-    );
   }
 
   @override
   void initState() {
     super.initState();
+    _editProfileProvider = EditProfileProvider();
     _selectedAvatarIndex = widget.avatarIndex;
     _nameController = TextEditingController(text: widget.name);
     _phoneController = TextEditingController(
@@ -107,6 +70,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     super.dispose();
     _nameController.dispose();
     _phoneController.dispose();
+    _editProfileProvider.dispose();
   }
 
   void _showAvatarPicker() {
@@ -153,72 +117,77 @@ class _UpdateProfileState extends State<UpdateProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: const Text('Pick Avatar')),
-      body: SafeArea(
-        child: Padding(
-          padding: REdgeInsets.only(left: 16, right: 16, bottom: 16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: 36.h),
-                Center(
-                  child: InkWell(
-                    onTap: _showAvatarPicker,
-                    child: CircleAvatar(
-                      radius: 75.r,
-                      backgroundImage: AssetImage(
-                        ConstantsManager.avatarList[_selectedAvatarIndex],
+    return ChangeNotifierProvider.value(
+      value: _editProfileProvider,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(title: const Text('Pick Avatar')),
+        body: SafeArea(
+          child: Padding(
+            padding: REdgeInsets.only(left: 16, right: 16, bottom: 16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 36.h),
+                  Center(
+                    child: InkWell(
+                      onTap: _showAvatarPicker,
+                      child: CircleAvatar(
+                        radius: 75.r,
+                        backgroundImage: AssetImage(
+                          ConstantsManager.avatarList[_selectedAvatarIndex],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: 36.h),
+                  SizedBox(height: 36.h),
 
-                // Name
-                CustomTextFormField(
-                  controller: _nameController,
-                  validator: Validators.nameValidator,
-                  prefixIcon: Icon(Icons.person),
-                ),
-                SizedBox(height: 20.h),
+                  // Name
+                  CustomTextFormField(
+                    controller: _nameController,
+                    validator: Validators.nameValidator,
+                    prefixIcon: Icon(Icons.person),
+                  ),
+                  SizedBox(height: 20.h),
 
-                // Phone
-                CustomTextFormField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(10),
-                  ],
-                  prefixText: '+20 ',
-                  validator: Validators.phoneValidator,
-                  keyboardType: TextInputType.phone,
-                  controller: _phoneController,
-                  prefixIcon: Icon(Icons.phone_rounded),
-                ),
-                SizedBox(height: 30.h),
+                  // Phone
+                  CustomTextFormField(
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
+                    prefixText: '+20 ',
+                    validator: Validators.phoneValidator,
+                    keyboardType: TextInputType.phone,
+                    controller: _phoneController,
+                    prefixIcon: Icon(Icons.phone_rounded),
+                  ),
+                  SizedBox(height: 30.h),
 
-                // Reset password
-                Text(
-                  "Reset Password",
-                  style: Theme.of(context).textTheme.displayMedium,
-                ),
+                  // Reset password
+                  Text(
+                    "Reset Password",
+                    style: Theme.of(context).textTheme.displayMedium,
+                  ),
 
-                Spacer(),
+                  Spacer(),
 
-                CustomButton(
-                  text: 'Delete Account',
-                  onTap: _deleteAccount,
-                  backgroundColor: Colors.red,
-                  foregroundColor: ColorsManager.white,
-                  borderColor: Colors.red,
-                ),
-                SizedBox(height: 20.h),
+                  CustomButton(
+                    text: 'Delete Account',
+                    onTap: () async {
+                      await _editProfileProvider.delete(context);
+                    },
+                    backgroundColor: Colors.red,
+                    foregroundColor: ColorsManager.white,
+                    borderColor: Colors.red,
+                  ),
+                  SizedBox(height: 20.h),
 
-                CustomButton(text: 'Update Data', onTap: _updateData),
-              ],
+                  CustomButton(text: 'Update Data', onTap: _updateData),
+                ],
+              ),
             ),
           ),
         ),

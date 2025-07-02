@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:movies/core/widgets/error_state_widget.dart';
-import 'package:movies/providers/favourites_provider.dart';
 import 'package:movies/providers/profile_provider.dart';
 import 'package:movies/screens/home_screen/tabs/profile_tab/widgets/empty_list_widget.dart';
 import 'package:movies/screens/home_screen/tabs/profile_tab/widgets/profile_grid.dart';
@@ -19,38 +18,33 @@ class ProfileTab extends StatefulWidget {
 
 class _ProfileTabState extends State<ProfileTab> {
   late ProfileProvider _profileProvider;
-  late FavouritesProvider _favouritesProvider;
   int _currentTab = 0;
   bool _historyNotSelected = true;
 
   void _loadProfile() async {
-    _profileProvider = ProfileProvider();
-    _favouritesProvider = FavouritesProvider();
     await _profileProvider.getProfile();
-    await _favouritesProvider.getProfile();
+    await _profileProvider.getFavourites();
   }
 
   @override
   void initState() {
     super.initState();
+    _profileProvider = ProfileProvider();
     _loadProfile();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: _profileProvider),
-        ChangeNotifierProvider.value(value: _favouritesProvider),
-      ],
+    return ChangeNotifierProvider<ProfileProvider>.value(
+      value: _profileProvider,
       child: Consumer<ProfileProvider>(
         builder: (context, provider, _) {
           var profileState = provider.profileState;
           switch (profileState) {
             case ProfileSuccessState():
-              return Consumer<FavouritesProvider>(
+              return Consumer<ProfileProvider>(
                 builder: (context, favProvider, _) {
-                  FavouritesState favState = favProvider.state;
+                  FavouritesState favState = favProvider.favouritesState;
                   switch (favState) {
                     case FavouritesSuccessState():
                       return Column(

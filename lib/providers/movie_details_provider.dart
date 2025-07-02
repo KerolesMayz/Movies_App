@@ -1,12 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:movies/data/api_services/api_services.dart';
-import 'package:movies/data/models/add_to_fav_response/Add_to_favourite_response.dart';
 import 'package:movies/data/models/check_favourite_response/check_is_favourite_response.dart';
 import 'package:movies/providers/home_tab_provider.dart';
 
+import '../data/models/general_response/general_response.dart';
 import '../data/models/movie_details_response/movie_details.dart';
 import '../data/models/movies_response/movie.dart';
-import '../data/models/remove_from_fav_response/remove_from_favourite_response.dart';
 import '../data/result/result.dart';
 
 class MovieDetailsProvider extends ChangeNotifier {
@@ -54,7 +53,7 @@ class MovieDetailsProvider extends ChangeNotifier {
       isFavCheckLoading = true;
       notifyListeners();
     }
-    Result<AddToFavouriteResponse> result = await ApiServices.addToFavs(
+    Result<GeneralResponse> result = await ApiServices.addToFavs(
       id: id,
       rating: rating,
       name: name,
@@ -62,13 +61,13 @@ class MovieDetailsProvider extends ChangeNotifier {
       year: year,
     );
     switch (result) {
-      case Success<AddToFavouriteResponse>():
+      case Success<GeneralResponse>():
         await isFavCheck(id: id);
-      case ServerError<AddToFavouriteResponse>():
+      case ServerError<GeneralResponse>():
         fetchedError = false;
         isFavCheckLoading = false;
         notifyListeners();
-      case GeneralException<AddToFavouriteResponse>():
+      case GeneralException<GeneralResponse>():
         fetchedError = false;
         isFavCheckLoading = false;
         notifyListeners();
@@ -80,16 +79,15 @@ class MovieDetailsProvider extends ChangeNotifier {
       isFavCheckLoading = true;
       notifyListeners();
     }
-    Result<RemoveFromFavouriteResponse> result =
-        await ApiServices.removeFromFavs(id: id);
+    Result<GeneralResponse> result = await ApiServices.removeFromFavs(id: id);
     switch (result) {
-      case Success<RemoveFromFavouriteResponse>():
+      case Success<GeneralResponse>():
         await isFavCheck(id: id);
-      case ServerError<RemoveFromFavouriteResponse>():
+      case ServerError<GeneralResponse>():
         fetchedError = false;
         isFavCheckLoading = false;
         notifyListeners();
-      case GeneralException<RemoveFromFavouriteResponse>():
+      case GeneralException<GeneralResponse>():
         fetchedError = false;
         isFavCheckLoading = false;
         notifyListeners();

@@ -7,7 +7,7 @@ class CheckIsFavouriteResponse {
     statusCode = json['statusCode'];
   }
 
-  String? message;
+  dynamic message;
   bool? isFavourite;
   num? statusCode;
 

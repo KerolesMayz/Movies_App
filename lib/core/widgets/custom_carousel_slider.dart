@@ -19,10 +19,11 @@ class CustomCarouselSlider extends StatelessWidget {
       options: CarouselOptions(
         height: 350.h,
         onPageChanged: onPageChanged,
-        autoPlay: false,
+        autoPlay: true,
+        autoPlayInterval: Duration(seconds: 5),
         enlargeCenterPage: true,
-        viewportFraction: 0.55,
-        enlargeFactor: 0.27,
+        viewportFraction: 0.55.h,
+        enlargeFactor: 74 / 277.h,
       ),
     );
   }

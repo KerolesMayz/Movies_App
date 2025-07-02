@@ -1,12 +1,12 @@
-class RemoveFromFavouriteResponse {
-  RemoveFromFavouriteResponse({this.message, this.statusCode});
+class GeneralResponse {
+  GeneralResponse({this.message, this.statusCode});
 
-  RemoveFromFavouriteResponse.fromJson(dynamic json) {
+  GeneralResponse.fromJson(dynamic json) {
     message = json['message'];
     statusCode = json['statusCode'];
   }
 
-  String? message;
+  dynamic message;
   num? statusCode;
 
   Map<String, dynamic> toJson() {

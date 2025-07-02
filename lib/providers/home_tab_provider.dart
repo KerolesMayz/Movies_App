@@ -15,20 +15,27 @@ class HomeTabProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getTrendingMoviesList({
-    int? page,
-    String? sort,
-    String? genre,
-  }) async
+  void emitFirstRecommendation(MoviesState newState) {
+    firstRecommendationState = newState;
+    notifyListeners();
+  }
+
+  void emitSecondRecommendation(MoviesState newState) {
+    secondRecommendationState = newState;
+    notifyListeners();
+  }
+
+  void emitThirdRecommendation(MoviesState newState) {
+    thirdRecommendationState = newState;
+    notifyListeners();
+  }
+
+  Future<void> getTrendingMoviesList() async
   {
     if (trendingState.runtimeType != MoviesLoadingState) {
       emitTrending(MoviesLoadingState());
     }
-    Result<List<Movie>> result = await ApiServices.getMoviesList(
-      page: page,
-      sort: sort,
-      genre: genre,
-    );
+    Result<List<Movie>> result = await ApiServices.getMoviesList();
     switch (result) {
       case Success<List<Movie>>():
         emitTrending(MoviesSuccessState(movies: result.data));

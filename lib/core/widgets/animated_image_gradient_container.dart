@@ -7,11 +7,11 @@ class AnimatedImageGradientContainer extends StatelessWidget {
   const AnimatedImageGradientContainer({
     super.key,
     required this.imageUrl,
-    this.bottomGradientColor = ColorsManager.black,
+    this.gradientColor = ColorsManager.black,
   });
 
-  final String imageUrl;
-  final Color bottomGradientColor;
+  final String? imageUrl;
+  final Color gradientColor;
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +21,22 @@ class AnimatedImageGradientContainer extends StatelessWidget {
       foregroundDecoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            bottomGradientColor.withValues(alpha: 1),
-            bottomGradientColor.withValues(alpha: 0.6),
-            bottomGradientColor.withValues(alpha: 0.8),
+            gradientColor.withValues(alpha: 1),
+            gradientColor.withValues(alpha: 0.6),
+            gradientColor.withValues(alpha: 0.8),
           ],
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
         ),
       ),
       decoration: BoxDecoration(
-        image: DecorationImage(
-          alignment: Alignment.topCenter,
-          image: NetworkImage(imageUrl),
-          fit: BoxFit.fitWidth,
-        ),
+        image: imageUrl != null
+            ? DecorationImage(
+                alignment: Alignment.topCenter,
+                image: NetworkImage(imageUrl!),
+                fit: BoxFit.fitWidth,
+              )
+            : null,
       ),
       duration: Duration(milliseconds: 300),
     );

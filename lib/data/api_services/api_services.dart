@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:movies/data/models/add_to_fav_response/Add_to_favourite_response.dart';
 import 'package:movies/data/models/check_favourite_response/check_is_favourite_response.dart';
 import 'package:movies/data/models/login_response/Login_response.dart';
 import 'package:movies/data/models/movie_details_response/movie_details.dart';
@@ -16,11 +15,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/resources_manager/dialog_utils.dart';
 import '../../core/routes_manager/routes_manager.dart';
+import '../models/general_response/general_response.dart';
 import '../models/movies_response/movie.dart';
 import '../models/movies_response/movies_response.dart';
 import '../models/profile_response/Profile_response.dart';
 import '../models/profile_response/profile_data.dart';
-import '../models/remove_from_fav_response/remove_from_favourite_response.dart';
 
 class ApiServices {
   static const String moviesBase = 'yts.mx';
@@ -33,6 +32,7 @@ class ApiServices {
   static const String addToFavorites = 'favorites/add';
   static const String register = 'auth/register';
   static const String login = 'auth/login';
+  static const String profile = 'profile';
   static const String favourites = 'favorites/all';
   static const String resetPassword = 'auth/reset-password';
 
@@ -320,14 +320,13 @@ class ApiServices {
     }
   }
 
-  static Future<Result<AddToFavouriteResponse>> addToFavs({
+  static Future<Result<GeneralResponse>> addToFavs({
     required String id,
     required String name,
     required String imageUrl,
     required String year,
     required double rating,
-  }) async
-  {
+  }) async {
     Uri uri = Uri.https(authenticationBase, addToFavorites);
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -338,16 +337,17 @@ class ApiServices {
       "name": name,
       "rating": rating,
       "imageURL": imageUrl,
-      "year": year
+      "year": year,
     });
     try {
       http.Response response = await http.post(
-          uri, headers: headers, body: body);
+        uri,
+        headers: headers,
+        body: body,
+      );
       var json = jsonDecode(response.body);
-      AddToFavouriteResponse addToFavouriteResponse =
-      AddToFavouriteResponse.fromJson(json);
-      if (addToFavouriteResponse.message ==
-          'Added to favourite successfully') {
+      GeneralResponse addToFavouriteResponse = GeneralResponse.fromJson(json);
+      if (addToFavouriteResponse.message == 'Added to favourite successfully') {
         return Success(data: addToFavouriteResponse);
       } else {
         return ServerError(
@@ -360,10 +360,9 @@ class ApiServices {
     }
   }
 
-  static Future<Result<RemoveFromFavouriteResponse>> removeFromFavs({
+  static Future<Result<GeneralResponse>> removeFromFavs({
     required String id,
-  }) async
-  {
+  }) async {
     Uri uri = Uri.https(authenticationBase, '$removeFromFavourites$id');
     Map<String, String> headers = {
       'Authorization': 'Bearer ${LoginResponse.userToken}',
@@ -371,15 +370,65 @@ class ApiServices {
     try {
       http.Response response = await http.delete(uri, headers: headers);
       var json = jsonDecode(response.body);
-      RemoveFromFavouriteResponse removeFromFavouriteResponse =
-      RemoveFromFavouriteResponse.fromJson(json);
-      if (removeFromFavouriteResponse.message ==
-          'Removed from favourite successfully') {
-        return Success(data: removeFromFavouriteResponse);
+      GeneralResponse generalResponse = GeneralResponse.fromJson(json);
+      if (generalResponse.message == 'Removed from favourite successfully') {
+        return Success(data: generalResponse);
       } else {
         return ServerError(
-          code: removeFromFavouriteResponse.statusCode.toString(),
-          message: removeFromFavouriteResponse.message!,
+          code: generalResponse.statusCode.toString(),
+          message: generalResponse.message!,
+        );
+      }
+    } on Exception catch (e) {
+      return GeneralException(exception: e);
+    }
+  }
+
+  static Future<Result<GeneralResponse>> deleteUser() async {
+    Uri uri = Uri.https(authenticationBase, profile);
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${LoginResponse.userToken}',
+    };
+    try {
+      http.Response response = await http.delete(uri, headers: headers);
+      var json = jsonDecode(response.body);
+      GeneralResponse generalResponse = GeneralResponse.fromJson(json);
+      if (generalResponse.message == "Profile deleted successfully") {
+        return Success(data: generalResponse);
+      } else {
+        return ServerError(
+          code: generalResponse.statusCode.toString(),
+          message: generalResponse.message!,
+        );
+      }
+    } on Exception catch (e) {
+      return GeneralException(exception: e);
+    }
+  }
+
+  static Future<Result<GeneralResponse>> updateUser(
+      {required String name, required String phone, required int avatarId}) async {
+    Uri uri = Uri.https(authenticationBase, profile);
+    Map<String, String> headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer ${LoginResponse.userToken}',
+    };
+    var body = jsonEncode(<String, dynamic>{
+      "name": name,
+      "phone": phone,
+      "avaterId": avatarId
+    });
+    try {
+      http.Response response = await http.patch(
+          uri, headers: headers, body: body);
+      var json = jsonDecode(response.body);
+      GeneralResponse generalResponse = GeneralResponse.fromJson(json);
+      if (generalResponse.message == "Profile updated successfully") {
+        return Success(data: generalResponse);
+      } else {
+        return ServerError(
+          code: generalResponse.statusCode.toString(),
+          message: generalResponse.message!,
         );
       }
     } on Exception catch (e) {

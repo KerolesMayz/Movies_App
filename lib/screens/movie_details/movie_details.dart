@@ -30,8 +30,7 @@ class _MovieDetailsState extends State<MovieDetails> {
   void _loadData() async {
     movieDetailsProvider = MovieDetailsProvider();
     await movieDetailsProvider.getMovieDetails(id: widget.id);
-    if (movieDetailsProvider.movieDetailsState.runtimeType ==
-        MovieDetailsSuccessState) {
+    if (movieDetailsProvider.movieDetailsState is MovieDetailsSuccessState) {
       await movieDetailsProvider.getMovieSuggestionList(id: widget.id);
       await movieDetailsProvider.isFavCheck(id: widget.id);
     } else {
@@ -52,9 +51,9 @@ class _MovieDetailsState extends State<MovieDetails> {
           return Padding(
             padding: EdgeInsets.only(right: 16.w),
             child: SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              width: 24.r,
+              height: 24.r,
+              child: CircularProgressIndicator(),
             ),
           );
         }
@@ -65,20 +64,29 @@ class _MovieDetailsState extends State<MovieDetails> {
 
         return IconButton(
           onPressed: () {
-            final movie =
+            if (provider.movieDetailsState is MovieDetailsSuccessState ||
+                (movieDetailsProvider.movieDetailsState
+                            as MovieDetailsSuccessState)
+                        .movie
+                        .id !=
+                    0) {
+              final movie =
+                  (provider.movieDetailsState as MovieDetailsSuccessState)
+                      .movie;
+              if (!provider.isFav) {
+                provider.addToFavourites(
+                  id: movie.id.toString(),
+                  name: movie.title ?? '',
+                  imageUrl: movie.largeCoverImage ?? '',
+                  year: movie.year.toString(),
+                  rating: double.parse(movie.rating.toString()),
+                );
+              } else {
                 (provider.movieDetailsState as MovieDetailsSuccessState).movie;
-            if (!provider.isFav) {
-              provider.addToFavourites(
-                id: movie.id.toString(),
-                name: movie.title ?? '',
-                imageUrl: movie.largeCoverImage ?? '',
-                year: movie.year.toString(),
-                rating: double.parse(movie.rating.toString()),
-              );
-            } else {
-              (provider.movieDetailsState as MovieDetailsSuccessState).movie;
-              movieDetailsProvider.removeFromFavourites(
-                  id: movie.id.toString());
+                movieDetailsProvider.removeFromFavourites(
+                  id: movie.id.toString(),
+                );
+              }
             }
           },
           icon: Icon(
@@ -86,7 +94,7 @@ class _MovieDetailsState extends State<MovieDetails> {
                 ? Icons.bookmark_rounded
                 : Icons.bookmark_outline_rounded,
             color: ColorsManager.white,
-            size: 30,
+            size: 30.r,
           ),
         );
       },
@@ -119,155 +127,144 @@ class _MovieDetailsState extends State<MovieDetails> {
                   case MovieDetailsSuccessState():
                     return state.movie.id != 0
                         ? SliverToBoxAdapter(
-                      child: Stack(
-                        children: [
-                          AnimatedImageGradientContainer(
-                            imageUrl: state.movie.largeCoverImage!,
-                          ),
-                          Padding(
-                            padding: REdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.stretch,
+                            child: Stack(
                               children: [
-                                SizedBox(
-                                  width: context.width,
-                                  height: context.height * 0.5,
-                                  child: Center(
-                                    child: SvgPicture.asset(
-                                      SvgIcons.play,
-                                      height: 100.r,
-                                    ),
+                                AnimatedImageGradientContainer(
+                                  imageUrl: state.movie.largeCoverImage!,
+                                ),
+                                Padding(
+                                  padding: REdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      SizedBox(
+                                        width: context.width,
+                                        height: context.height * 0.5,
+                                        child: Center(
+                                          child: SvgPicture.asset(
+                                            SvgIcons.play,
+                                            height: 100.r,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        state.movie.title!,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium!
+                                            .copyWith(fontSize: 24.sp),
+                                      ),
+                                      Text(
+                                        state.movie.year.toString(),
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displayMedium!
+                                            .copyWith(
+                                              color: ColorsManager.gray,
+                                              height: 3.h,
+                                            ),
+                                      ),
+                                      CustomButton(
+                                        text: 'Watch',
+                                        onTap: () {},
+                                        backgroundColor: Colors.red,
+                                        foregroundColor: ColorsManager.white,
+                                        borderColor: Colors.red,
+                                      ),
+                                      SizedBox(height: 16.h),
+                                      Wrap(
+                                        alignment: WrapAlignment.center,
+                                        spacing: 16.w,
+                                        runSpacing: 10.h,
+                                        children: [
+                                          CustomChip(
+                                            text: state.movie.likeCount
+                                                .toString(),
+                                            svgIconPath: SvgIcons.heart,
+                                          ),
+                                          CustomChip(
+                                            text: state.movie.runtime
+                                                .toString(),
+                                            svgIconPath: SvgIcons.time,
+                                          ),
+                                          CustomChip(
+                                            text: state.movie.rating.toString(),
+                                            svgIconPath: SvgIcons.star,
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      Text(
+                                        'Screen Shoots',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelMedium,
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadiusGeometry.circular(16.r),
+                                        child: Image.network(
+                                          state.movie.largeScreenshotImage1!,
+                                        ),
+                                      ),
+                                      SizedBox(height: 14.h),
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadiusGeometry.circular(16.r),
+                                        child: Image.network(
+                                          state.movie.largeScreenshotImage2!,
+                                        ),
+                                      ),
+                                      SizedBox(height: 14.h),
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadiusGeometry.circular(16.r),
+                                        child: Image.network(
+                                          state.movie.largeScreenshotImage3!,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      Text(
+                                        'Similar',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelMedium,
+                                      ),
+                                      SizedBox(height: 20.h),
+                                    ],
                                   ),
                                 ),
-                                Text(
-                                  state.movie.title!,
-                                  textAlign: TextAlign.center,
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .headlineMedium!
-                                      .copyWith(fontSize: 24.sp),
-                                ),
-                                Text(
-                                  state.movie.year.toString(),
-                                  textAlign: TextAlign.center,
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .displayMedium!
-                                      .copyWith(
-                                    color: ColorsManager.gray,
-                                    height: 3.h,
-                                  ),
-                                ),
-                                CustomButton(
-                                  text: 'Watch',
-                                  onTap: () {},
-                                  backgroundColor: Colors.red,
-                                  foregroundColor: ColorsManager.white,
-                                  borderColor: Colors.red,
-                                ),
-                                SizedBox(height: 16.h),
-                                Wrap(
-                                  alignment: WrapAlignment.center,
-                                  spacing: 16.w,
-                                  runSpacing: 10.h,
+                              ],
+                            ),
+                          )
+                        : SliverToBoxAdapter(
+                            child: SafeArea(
+                              child: Padding(
+                                padding: REdgeInsets.symmetric(horizontal: 16),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
-                                    CustomChip(
-                                      text: state.movie.likeCount
-                                          .toString(),
-                                      svgIconPath: SvgIcons.heart,
+                                    Text(
+                                      'Bad Data from Server 💀💀',
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleLarge,
                                     ),
-                                    CustomChip(
-                                      text: state.movie.runtime
-                                          .toString(),
-                                      svgIconPath: SvgIcons.time,
-                                    ),
-                                    CustomChip(
-                                      text: state.movie.rating.toString(),
-                                      svgIconPath: SvgIcons.star,
+                                    Lottie.asset(
+                                      'assets/animations/popcorn.json',
+                                      reverse: true,
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 20.h),
-                                Text(
-                                  'Screen Shoots',
-                                  style: Theme
-                                      .of(
-                                    context,
-                                  )
-                                      .textTheme
-                                      .labelMedium,
-                                ),
-                                SizedBox(height: 20.h),
-                                ClipRRect(
-                                  borderRadius:
-                                  BorderRadiusGeometry.circular(16.r),
-                                  child: Image.network(
-                                    state.movie.largeScreenshotImage1!,
-                                  ),
-                                ),
-                                SizedBox(height: 14.h),
-                                ClipRRect(
-                                  borderRadius:
-                                  BorderRadiusGeometry.circular(16.r),
-                                  child: Image.network(
-                                    state.movie.largeScreenshotImage2!,
-                                  ),
-                                ),
-                                SizedBox(height: 14.h),
-                                ClipRRect(
-                                  borderRadius:
-                                  BorderRadiusGeometry.circular(16.r),
-                                  child: Image.network(
-                                    state.movie.largeScreenshotImage3!,
-                                  ),
-                                ),
-                                SizedBox(height: 20.h),
-                                Text(
-                                  'Similar',
-                                  style: Theme
-                                      .of(
-                                    context,
-                                  )
-                                      .textTheme
-                                      .labelMedium,
-                                ),
-                                SizedBox(height: 20.h),
-                              ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                        : SliverToBoxAdapter(
-                      child: SafeArea(
-                        child: Padding(
-                          padding: REdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Bad Data from Server 💀💀',
-                                textAlign: TextAlign.center,
-                                style: Theme
-                                    .of(
-                                  context,
-                                )
-                                    .textTheme
-                                    .titleLarge,
-                              ),
-                              Lottie.asset(
-                                'assets/animations/popcorn.json',
-                                reverse: true,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
+                          );
                   case MovieDetailsLoadingState():
                     return SliverToBoxAdapter(
                       child: SizedBox(
@@ -331,26 +328,17 @@ class _MovieDetailsState extends State<MovieDetails> {
                             SizedBox(height: 20.h),
                             Text(
                               'Summary',
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .labelMedium,
+                              style: Theme.of(context).textTheme.labelMedium,
                             ),
                             SizedBox(height: 20.h),
                             Text(
                               state.movie.descriptionFull ?? '',
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .bodySmall,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                             SizedBox(height: 20.h),
                             Text(
                               'Cast',
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .labelMedium,
+                              style: Theme.of(context).textTheme.labelMedium,
                             ),
                             SizedBox(height: 20.h),
                           ],
@@ -384,25 +372,25 @@ class _MovieDetailsState extends State<MovieDetails> {
                   case MovieDetailsSuccessState():
                     return state.movie.cast != null
                         ? SliverPadding(
-                      padding: REdgeInsets.symmetric(horizontal: 16),
-                      sliver: SliverList.separated(
-                        itemBuilder: (_, index) {
-                          return CastItem(
-                            movieCast: state.movie.cast![index],
-                          );
-                        },
-                        separatorBuilder: (_, _) {
-                          return SizedBox(height: 8.h);
-                        },
-                        itemCount: state.movie.cast!.length,
-                      ),
-                    )
+                            padding: REdgeInsets.symmetric(horizontal: 16),
+                            sliver: SliverList.separated(
+                              itemBuilder: (_, index) {
+                                return CastItem(
+                                  movieCast: state.movie.cast![index],
+                                );
+                              },
+                              separatorBuilder: (_, _) {
+                                return SizedBox(height: 8.h);
+                              },
+                              itemCount: state.movie.cast!.length,
+                            ),
+                          )
                         : SliverToBoxAdapter(
-                      child: Lottie.asset(
-                        'assets/animations/popcorn.json',
-                        reverse: true,
-                      ),
-                    );
+                            child: Lottie.asset(
+                              'assets/animations/popcorn.json',
+                              reverse: true,
+                            ),
+                          );
                   case MovieDetailsLoadingState():
                     return SliverToBoxAdapter(
                       child: SizedBox(
@@ -433,10 +421,7 @@ class _MovieDetailsState extends State<MovieDetails> {
                         padding: REdgeInsets.only(
                           left: 16,
                           right: 16,
-                          bottom: Theme
-                              .of(context)
-                              .bottomAppBarTheme
-                              .height!,
+                          bottom: Theme.of(context).bottomAppBarTheme.height!,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -444,10 +429,7 @@ class _MovieDetailsState extends State<MovieDetails> {
                             SizedBox(height: 20.h),
                             Text(
                               'Genres',
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .labelMedium,
+                              style: Theme.of(context).textTheme.labelMedium,
                             ),
                             SizedBox(height: 20.h),
                             Wrap(

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/constants_manager/constants_manager.dart';
 import 'package:movies/data/models/login_response/Login_response.dart';
+import 'package:movies/providers/profile_provider.dart';
 import 'package:movies/screens/update_profile/update_profile.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/colors_manager/colors_Manager.dart';
@@ -62,6 +64,7 @@ class ProfileHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     return Container(
       color: ColorsManager.mediumBlack,
       child: Column(
@@ -148,7 +151,10 @@ class ProfileHeaderWidget extends StatelessWidget {
                               avatarIndex: avatarIndex,
                             ),
                           ),
-                        ),
+                            ).then((_) async {
+                              await profileProvider.getProfile();
+                              await profileProvider.getFavourites();
+                            }),
                       ),
                     ),
                     SizedBox(width: 10.w),

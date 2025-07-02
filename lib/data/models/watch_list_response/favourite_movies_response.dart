@@ -14,7 +14,7 @@ class FavouriteMoviesResponse {
     }
   }
 
-  String? message;
+  dynamic message;
   List<FavouriteMovie>? data;
   num? statusCode;
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movies/core/extension/context_extension.dart';
 import 'package:movies/core/widgets/movie_card.dart';
 import 'package:movies/data/models/movies_response/movie.dart';
 
@@ -48,7 +47,7 @@ class RecommendationMovies extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: context.height * 0.24,
+              height: 220.h,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: REdgeInsets.symmetric(horizontal: 16),
@@ -58,7 +57,6 @@ class RecommendationMovies extends StatelessWidget {
                     rating: movies[index].rating,
                     id: movies[index].id.toString(),
                     width: 146.w,
-                    fit: BoxFit.fill,
                   );
                 },
                 separatorBuilder: (context, index) {
