@@ -40,12 +40,14 @@ class ApiServices {
     int? page,
     String? sort,
     String? genre,
+    String query = '0'
   }) async {
     Map<String, dynamic> queryParameters = {
       'limit': '10',
       'page': page.toString(),
       'sort_by': sort,
       'genre': genre,
+      'query_term': query
     };
     Uri uri = Uri.https(moviesBase, listMovies, queryParameters);
     try {
@@ -53,7 +55,7 @@ class ApiServices {
       var json = jsonDecode(response.body);
       MoviesResponse moviesResponse = MoviesResponse.fromJson(json);
       if (moviesResponse.status == 'ok') {
-        return Success(data: moviesResponse.data!.movies!);
+        return Success(data: moviesResponse.data!.movies ?? []);
       } else {
         return ServerError(
           code: moviesResponse.status!,

@@ -76,6 +76,7 @@ class _HomeTabState extends State<HomeTab> {
                           imageUrl: state.movies[currentMovie].largeCoverImage,
                         ),
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Image.asset(
                               AssetsManager.availableNow,
@@ -90,6 +91,7 @@ class _HomeTabState extends State<HomeTab> {
                                       rating: movie.rating,
                                       id: movie.id.toString(),
                                       radius: 20.r,
+                                      width: 230.w,
                                       fit: BoxFit.fill,
                                     ),
                                   )

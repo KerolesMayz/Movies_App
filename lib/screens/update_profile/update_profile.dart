@@ -117,8 +117,10 @@ class _UpdateProfileState extends State<UpdateProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: _editProfileProvider,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: _editProfileProvider),
+      ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(title: const Text('Pick Avatar')),

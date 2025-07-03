@@ -5,7 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
 import 'package:movies/core/constants_manager/constants_manager.dart';
 import 'package:movies/core/widgets/error_state_widget.dart';
-import 'package:movies/providers/explore_tab_provider.dart';
+import 'package:movies/providers/browse_tab_provider.dart';
 import 'package:movies/providers/home_tab_provider.dart';
 import 'package:movies/screens/home_screen/tabs/browse_tab/widgets/custom_tab.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +23,7 @@ class _BrowseTabState extends State<BrowseTab> {
   int currentTab = 0;
   int page = 1;
   bool isLoading = false;
-  late ExploreTabProvider exploreTabProvider;
+  late BrowseTabProvider exploreTabProvider;
   late ScrollController controller;
 
   void listener() async {
@@ -51,7 +51,7 @@ class _BrowseTabState extends State<BrowseTab> {
   void initState() {
     super.initState();
     controller = ScrollController();
-    exploreTabProvider = ExploreTabProvider();
+    exploreTabProvider = BrowseTabProvider();
     exploreTabProvider.getMoviesList(
       page: page,
       genre: ConstantsManager.genres[currentTab],
@@ -61,7 +61,7 @@ class _BrowseTabState extends State<BrowseTab> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<ExploreTabProvider>.value(
+    return ChangeNotifierProvider<BrowseTabProvider>.value(
       value: exploreTabProvider,
       child: SafeArea(
         bottom: false,
@@ -105,7 +105,7 @@ class _BrowseTabState extends State<BrowseTab> {
                     .toList(),
               ),
             ),
-            Consumer<ExploreTabProvider>(
+            Consumer<BrowseTabProvider>(
               builder: (_, provider, _) {
                 var state = provider.moviesState;
                 switch (state) {

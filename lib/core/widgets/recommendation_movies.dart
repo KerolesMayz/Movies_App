@@ -57,6 +57,7 @@ class RecommendationMovies extends StatelessWidget {
                     rating: movies[index].rating,
                     id: movies[index].id.toString(),
                     width: 146.w,
+                    fit: BoxFit.fill,
                   );
                 },
                 separatorBuilder: (context, index) {

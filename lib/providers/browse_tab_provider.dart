@@ -5,7 +5,7 @@ import '../data/models/movies_response/movie.dart';
 import '../data/result/result.dart';
 import 'home_tab_provider.dart';
 
-class ExploreTabProvider extends ChangeNotifier {
+class BrowseTabProvider extends ChangeNotifier {
   List<Movie> movies = [];
   MoviesState moviesState = MoviesLoadingState();
 

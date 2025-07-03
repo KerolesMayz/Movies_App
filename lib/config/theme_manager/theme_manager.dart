@@ -44,6 +44,7 @@ class ThemeManager {
         backgroundColor: ColorsManager.mediumBlack,
       ),
       inputDecorationTheme: InputDecorationTheme(
+          hintStyle: GoogleFonts.roboto(color: ColorsManager.white),
         labelStyle: GoogleFonts.roboto(color: ColorsManager.white),
           contentPadding: REdgeInsets.symmetric(vertical: 14, horizontal: 0),
         prefixIconColor: ColorsManager.white,

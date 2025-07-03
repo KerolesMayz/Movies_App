@@ -19,20 +19,25 @@ class CustomTextFormField extends StatelessWidget {
     this.keyboardType,
     this.prefixText,
     this.inputFormatters,
+    this.onChanged,
+    this.hintText,
+    this.prefixIconConstraints
   });
 
   final TextEditingController? controller;
   final int? maxLength;
   final bool obscureText;
   final String? labelText;
+  final String? hintText;
   final Widget? prefixIcon;
   final bool isPassword;
   final VoidCallback? onVisibilityClick;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
   final String? prefixText;
+  final BoxConstraints? prefixIconConstraints;
   final List<TextInputFormatter>? inputFormatters;
-
+  final void Function(String)? onChanged;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -47,7 +52,10 @@ class CustomTextFormField extends StatelessWidget {
         color: ColorsManager.white,
         fontWeight: FontWeight.w400,
       ),
+      onChanged: onChanged,
       decoration: InputDecoration(
+        hintText: hintText,
+        prefixIconConstraints: prefixIconConstraints,
         border: OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.circular(16.r)

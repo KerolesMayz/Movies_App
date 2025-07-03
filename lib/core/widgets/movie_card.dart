@@ -31,12 +31,13 @@ class MovieCard extends StatelessWidget {
           Navigator.push(context,
               CupertinoPageRoute(builder: (_) => MovieDetails(id: id,)));
         },
-        child: Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(radius),
-              child: SizedBox(
-                width: width,
+        child: SizedBox(
+          width: width,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
                 child: Image.network(
                     imageUrl,
                     fit: fit,
@@ -60,38 +61,39 @@ class MovieCard extends StatelessWidget {
                         )
                 ),
               ),
-            ),
 
-            Align(
-              alignment: Alignment.topLeft,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                margin: REdgeInsets.all(14),
-                color: ColorsManager.black.withAlpha(75),
-                child: Padding(
-                  padding: REdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        rating.toString(),
-                        style: GoogleFonts.roboto(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16.sp,
-                          color: ColorsManager.white,
+              Align(
+                alignment: Alignment.topLeft,
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  margin: REdgeInsets.all(14),
+                  color: ColorsManager.black.withAlpha(75),
+                  child: Padding(
+                    padding: REdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          rating.toString(),
+                          style: GoogleFonts.roboto(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16.sp,
+                            color: ColorsManager.white,
+                          ),
                         ),
-                      ),
-                      Icon(Icons.star, color: ColorsManager.yellow, size: 15.r),
-                    ],
+                        Icon(Icons.star, color: ColorsManager.yellow,
+                            size: 15.r),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         )
     );
   }
