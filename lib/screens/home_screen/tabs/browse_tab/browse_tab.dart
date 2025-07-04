@@ -125,7 +125,7 @@ class _BrowseTabState extends State<BrowseTab> {
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           mainAxisSpacing: 16.h,
                           crossAxisSpacing: 16.w,
-                          childAspectRatio: 12 / 17,
+                          childAspectRatio: 12 / 18,
                           crossAxisCount: 2,
                         ),
                         itemBuilder: (_, index) {

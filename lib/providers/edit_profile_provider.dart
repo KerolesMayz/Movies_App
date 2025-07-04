@@ -15,7 +15,7 @@ class EditProfileProvider extends ChangeNotifier {
       "Sure you want to Delete Account ?",
       positiveTitle: 'Yes',
       positiveAction: () async {
-        DialogUtils.showLoadingDialog(context, message: 'please wait');
+        DialogUtils.showLoadingDialog(context, message: 'Please wait...');
         var result = await ApiServices.deleteUser();
         switch (result) {
           case Success<GeneralResponse>():
@@ -44,14 +44,14 @@ class EditProfileProvider extends ChangeNotifier {
             DialogUtils.showMessageDialog(
               context,
               result.message,
-              negativeTitle: 'ok',
+              negativeTitle: 'Ok',
             );
           case GeneralException<GeneralResponse>():
             DialogUtils.hideDialog(context);
             DialogUtils.showMessageDialog(
               context,
               result.exception.toString(),
-              negativeTitle: 'ok',
+              negativeTitle: 'Ok',
             );
         }
       },
@@ -70,7 +70,7 @@ class EditProfileProvider extends ChangeNotifier {
       "Sure you want to Update Account ?",
       positiveTitle: 'Yes',
       positiveAction: () async {
-        DialogUtils.showLoadingDialog(context, message: 'please wait');
+        DialogUtils.showLoadingDialog(context, message: 'Updating...');
 
         var result = await ApiServices.updateUser(
           name: name,
@@ -85,19 +85,19 @@ class EditProfileProvider extends ChangeNotifier {
             DialogUtils.showMessageDialog(
               context,
               'Account Updated Successfully',
-              positiveTitle: 'ok',
+              positiveTitle: 'Ok',
             );
           case ServerError<GeneralResponse>():
             DialogUtils.showMessageDialog(
               context,
               result.message,
-              negativeTitle: 'ok',
+              negativeTitle: 'Ok',
             );
           case GeneralException<GeneralResponse>():
             DialogUtils.showMessageDialog(
               context,
               result.exception.toString(),
-              negativeTitle: 'ok',
+              negativeTitle: 'Ok',
             );
         }
       },

@@ -198,7 +198,7 @@ class _MovieDetailsState extends State<MovieDetails> {
                                       ),
                                       SizedBox(height: 20.h),
                                       Text(
-                                        'Screen Shoots',
+                                        'Screenshots',
                                         style: Theme.of(
                                           context,
                                         ).textTheme.labelMedium,

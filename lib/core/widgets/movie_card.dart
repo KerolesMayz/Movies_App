@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movies/data/local_services/local_history_service.dart';
+import 'package:movies/data/models/profile_response/profile_data.dart';
+import 'package:movies/data/models/watch_list_response/favourite_movie.dart';
 import 'package:movies/screens/movie_details/movie_details.dart';
 
 import '../colors_manager/colors_Manager.dart';
@@ -28,6 +31,15 @@ class MovieCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
         onTap: () {
+           LocalHistoryService.saveVisitedMovie(
+            FavouriteMovie(
+              movieId: id,
+              imageURL: imageUrl,
+              rating: rating!,
+              // Add more fields if your model needs
+            ),
+             ProfileData.userProfile!.id.toString(),
+          );
           Navigator.push(context,
               CupertinoPageRoute(builder: (_) => MovieDetails(id: id,)));
         },
@@ -86,7 +98,7 @@ class MovieCard extends StatelessWidget {
                           ),
                         ),
                         Icon(Icons.star, color: ColorsManager.yellow,
-                            size: 15.r),
+                            size: 16.r),
                       ],
                     ),
                   ),

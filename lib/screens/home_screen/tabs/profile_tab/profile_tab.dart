@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movies/core/widgets/error_state_widget.dart';
 import 'package:movies/providers/profile_provider.dart';
+import 'package:movies/providers/states/history_state.dart';
 import 'package:movies/screens/home_screen/tabs/profile_tab/widgets/empty_list_widget.dart';
 import 'package:movies/screens/home_screen/tabs/profile_tab/widgets/profile_grid.dart';
 import 'package:movies/screens/home_screen/tabs/profile_tab/widgets/profile_header_widget.dart';
@@ -24,6 +25,7 @@ class _ProfileTabState extends State<ProfileTab> {
   void _loadProfile() async {
     await _profileProvider.getProfile();
     await _profileProvider.getFavourites();
+    // await _profileProvider.getHistory();
   }
 
   @override
@@ -58,7 +60,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                 name: ProfileData.userProfile!.name!,
                                 phone: ProfileData.userProfile!.phone!,
                                 watchListCount: favState.data.length.toString(),
-                                historyCount: 5,
+                                historyCount: _profileProvider.historyState is HistorySuccessState ? (_profileProvider.historyState as HistorySuccessState).data.length : 0,
                                 avatarIndex: int.parse(
                                   ProfileData.userProfile!.avaterId.toString(),
                                 ),
@@ -69,9 +71,12 @@ class _ProfileTabState extends State<ProfileTab> {
                             onTap: (index) {
                               setState(() {
                                 _currentTab = index;
-                                _currentTab == 1
-                                    ? _historyNotSelected = false
-                                    : _historyNotSelected = true;
+                                _historyNotSelected = _currentTab == 0;
+
+                                if (_currentTab == 1) {
+                                  final userId = ProfileData.userProfile!.id.toString();
+                                  _profileProvider.getHistory(userId); // ← Add this line!
+                                }
                               });
                             },
                           ),
@@ -84,7 +89,23 @@ class _ProfileTabState extends State<ProfileTab> {
                             )
                                 : Expanded(child: EmptyListWidget()),
                           if (!_historyNotSelected)
-                            Expanded(child: EmptyListWidget())
+                            Expanded(
+                              child: Consumer<ProfileProvider>(
+                                builder: (context, provider, _) {
+                                  var historyState = provider.historyState;
+                                  switch (historyState) {
+                                    case HistorySuccessState():
+                                      return historyState.data.isNotEmpty
+                                          ? ProfileGrid(favMovies: historyState.data)
+                                          : EmptyListWidget();
+                                    case HistoryLoadingState():
+                                      return Center(child: CircularProgressIndicator());
+                                    case HistoryErrorState():
+                                      return ErrorStateWidget(exception: historyState.exception);
+                                  }
+                                },
+                              ),
+                            )
                         ],
                       );
                     case FavouritesLoadingState():

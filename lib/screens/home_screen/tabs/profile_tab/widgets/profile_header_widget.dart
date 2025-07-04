@@ -32,10 +32,10 @@ class ProfileHeaderWidget extends StatelessWidget {
   void _logout(BuildContext context) {
     DialogUtils.showMessageDialog(
       context,
-      "Sure you want to logout?",
+      "Sure you want to Log out?",
       positiveTitle: 'Yes',
       positiveAction: () async {
-        DialogUtils.showLoadingDialog(context, message: 'plz wait');
+        DialogUtils.showLoadingDialog(context, message: 'Loading...');
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.remove('userCredentials');
         ProfileData.userProfile = null;
@@ -43,7 +43,7 @@ class ProfileHeaderWidget extends StatelessWidget {
         DialogUtils.hideDialog(context);
         DialogUtils.showMessageDialog(
           context,
-          'Loged out Successfully',
+          'Logged out Successfully',
           negativeTitle: 'Register',
           negativeAction: () => Navigator.pushNamedAndRemoveUntil(
             context,

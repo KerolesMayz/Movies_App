@@ -21,7 +21,7 @@ class ProfileGrid extends StatelessWidget {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         mainAxisSpacing: 8.h,
         crossAxisSpacing: 8.w,
-        childAspectRatio: 12 / 17,
+        childAspectRatio: 12 / 18,
         crossAxisCount: 3,
       ),
       itemBuilder: (_, index) {

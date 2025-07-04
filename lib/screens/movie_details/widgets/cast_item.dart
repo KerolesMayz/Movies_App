@@ -17,7 +17,7 @@ class CastItem extends StatelessWidget {
             )
           : Icon(Icons.error, size: 60.r),
       title: Text('Name : ${movieCast.name}'),
-      subtitle: Text('Charcter : ${movieCast.characterName}'),
+      subtitle: Text('Character : ${movieCast.characterName}'),
     );
   }
 }

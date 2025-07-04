@@ -18,7 +18,7 @@ class RegisterProvider extends ChangeNotifier {
   }) async {
     DialogUtils.showLoadingDialog(
       context,
-      message: "please wait",
+      message: "Please wait...",
       dismissible: false,
     );
     Result<RegisterResponse> response = await ApiServices.registerUser(
@@ -35,9 +35,9 @@ class RegisterProvider extends ChangeNotifier {
       case Success<RegisterResponse>():
         DialogUtils.showMessageDialog(
           context,
-          'Signedup Successfully',
-          positiveTitle: 'login',
-          negativeTitle: 'ok',
+          'Signed up Successfully',
+          positiveTitle: 'Login',
+          negativeTitle: 'Ok',
           positiveAction: () {
             Navigator.pushNamedAndRemoveUntil(
               context,
@@ -50,13 +50,13 @@ class RegisterProvider extends ChangeNotifier {
         DialogUtils.showMessageDialog(
           context,
           response.message.toString(),
-          positiveTitle: 'ok',
+          positiveTitle: 'Ok',
         );
       case GeneralException<RegisterResponse>():
         DialogUtils.showMessageDialog(
           context,
           'Connection Error',
-          positiveTitle: 'ok',
+          positiveTitle: 'Ok',
         );
     }
   }

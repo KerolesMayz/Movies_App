@@ -123,7 +123,7 @@ class _LoginState extends State<Login> {
               onTap: () {
                 if (!_formKey.currentState!.validate()) return;
                 Provider.of<LoginProvider>(context, listen: false).login(
-                    email: _emailController.text,
+                    email: _emailController.text.toLowerCase(),
                     password: _passwordController.text,
                     context: context);
               },

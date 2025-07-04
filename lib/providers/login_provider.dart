@@ -32,7 +32,7 @@ class LoginProvider extends ChangeNotifier {
   }) async {
     DialogUtils.showLoadingDialog(
       context,
-      message: "please wait",
+      message: "Please wait...",
       dismissible: false,
     );
     Result<LoginResponse> result = await ApiServices.loginUser(

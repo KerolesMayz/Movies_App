@@ -38,7 +38,7 @@ class _RegisterState extends State<Register> {
     String phone = '+20${_phoneController.text}';
     await Provider.of<RegisterProvider>(context, listen: false).registerUser(
       name: _nameController.text,
-      email: _emailController.text,
+      email: _emailController.text.toLowerCase(),
       password: _passwordController.text,
       confirmPassword: _confirmPasswordController.text,
       phoneNumber: phone,
@@ -70,11 +70,11 @@ class _RegisterState extends State<Register> {
 
   String? _confirmPasswordValidator(String? input) {
     if (input == null || input.trim().isEmpty) {
-      return 'Please enter your password confirmation';
+      return 'Please confirm your password';
     } else if (input.trim().length < 8) {
-      return 'Please enter password larger that 7';
+      return 'Password should be at least 8 characters';
     } else if (_passwordController.text.trim() != input.trim()) {
-      return 'please enter the same password';
+      return 'Password is not matching';
     }
     return null;
   }
