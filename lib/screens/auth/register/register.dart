@@ -9,8 +9,9 @@ import 'package:movies/core/routes_manager/routes_manager.dart';
 import 'package:movies/core/widgets/custom_button.dart';
 import 'package:movies/core/widgets/custom_call_for_action_widget.dart';
 import 'package:movies/core/widgets/custom_text_form_field.dart';
-import 'package:movies/core/widgets/language_toggle_switch.dart';
-import 'package:movies/data/api_services/api_services.dart';
+// import 'package:movies/core/widgets/language_toggle_switch.dart';
+import 'package:movies/providers/register_provider.dart';
+import 'package:provider/provider.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -32,10 +33,10 @@ class _RegisterState extends State<Register> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late CarouselSliderController controller;
 
-  void onRegisterTap() {
+  void onRegisterTap() async {
     if (!_formKey.currentState!.validate()) return;
     String phone = '+20${_phoneController.text}';
-    ApiServices.registerUser(
+    await Provider.of<RegisterProvider>(context, listen: false).registerUser(
       name: _nameController.text,
       email: _emailController.text,
       password: _passwordController.text,
@@ -78,11 +79,11 @@ class _RegisterState extends State<Register> {
     return null;
   }
 
-  void _changeLanguage(int newValue) {
-    setState(() {
-      languageValue = newValue;
-    });
-  }
+  // void _changeLanguage(int newValue) {
+  //   setState(() {
+  //     languageValue = newValue;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -227,13 +228,13 @@ class _RegisterState extends State<Register> {
             SizedBox(height: 30.h),
 
             // Language Toggle
-            Center(
-              child: LanguageToggleSwitch(
-                currentLanguage: languageValue,
-                changeLanguage: _changeLanguage,
-              ),
-            ),
-            SizedBox(height: 20.h),
+            // Center(
+            //   child: LanguageToggleSwitch(
+            //     currentLanguage: languageValue,
+            //     changeLanguage: _changeLanguage,
+            //   ),
+            // ),
+            // SizedBox(height: 20.h),
           ],
         ),
       ),

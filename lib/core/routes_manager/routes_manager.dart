@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:movies/providers/home_screen_provider.dart';
+import 'package:movies/providers/login_provider.dart';
+import 'package:movies/providers/register_provider.dart';
 import 'package:movies/screens/auth/forget_password/forget_password.dart';
 import 'package:movies/screens/auth/login/login.dart';
 import 'package:movies/screens/auth/register/register.dart';
@@ -24,9 +26,19 @@ class RoutesManager {
       case onboarding:
         return CupertinoPageRoute(builder: (_) => const Onboarding());
       case login:
-        return CupertinoPageRoute(builder: (_) => const Login());
+        return CupertinoPageRoute(
+          builder: (_) => ChangeNotifierProvider<LoginProvider>(
+            create: (_) => LoginProvider(),
+            child: const Login(),
+          ),
+        );
       case register:
-        return CupertinoPageRoute(builder: (_) => const Register());
+        return CupertinoPageRoute(
+          builder: (_) => ChangeNotifierProvider<RegisterProvider>(
+            create: (_) => RegisterProvider(),
+            child: const Register(),
+          ),
+        );
       case forgetPassword:
         return CupertinoPageRoute(builder: (_) => const ForgetPassword());
       case homeScreen:

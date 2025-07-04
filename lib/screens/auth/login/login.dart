@@ -1,16 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/assets_manager/assets_manager.dart';
 import 'package:movies/core/functions/validators.dart';
-import 'package:movies/core/resources_manager/dialog_utils.dart';
 import 'package:movies/core/routes_manager/routes_manager.dart';
 import 'package:movies/core/widgets/custom_button.dart';
 import 'package:movies/core/widgets/custom_call_for_action_widget.dart';
 import 'package:movies/core/widgets/custom_text_form_field.dart';
-import 'package:movies/data/api_services/api_services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:movies/providers/login_provider.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -29,22 +26,6 @@ class _LoginState extends State<Login> {
   late TextEditingController _passwordController;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  void getCashedUserCredentials() async {
-    DialogUtils.showLoadingDialog(context, message: 'please wait');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? cashedJson = prefs.getString('userCredentials');
-    if (!mounted) return;
-    DialogUtils.hideDialog(context);
-    if (cashedJson != null) {
-      var credentialsJson = jsonDecode(cashedJson);
-      await ApiServices.loginUser(
-        email: credentialsJson['email'],
-        password: credentialsJson['password'],
-        context: context,
-      );
-    }
-  }
 
   @override
   void initState() {
@@ -69,7 +50,9 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => getCashedUserCredentials(),
+          (_) =>
+          Provider.of<LoginProvider>(context, listen: false)
+              .getCashedUserCredentials(context),
     );
     return Scaffold(
       body: Form(
@@ -139,11 +122,10 @@ class _LoginState extends State<Login> {
               text: 'Login',
               onTap: () {
                 if (!_formKey.currentState!.validate()) return;
-                ApiServices.loginUser(
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                  context: context,
-                );
+                Provider.of<LoginProvider>(context, listen: false).login(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                    context: context);
               },
             ),
             SizedBox(height: 20.h),

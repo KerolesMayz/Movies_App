@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies/core/extension/context_extension.dart';
+import 'package:movies/core/functions/validators.dart';
 import 'package:movies/core/widgets/custom_button.dart';
 import 'package:movies/core/widgets/custom_text_form_field.dart';
 
@@ -15,17 +16,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   late TextEditingController _emailController;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  String? _emailValidator(String? input) {
-    if (input == null || input.trim().isEmpty) {
-      return 'Please inter your email';
-    } else if (!RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]",
-    ).hasMatch(input)) {
-      return 'Please inter a valid email';
-    }
-    return null;
-  }
 
   @override
   void initState() {
@@ -56,7 +46,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
 
             CustomTextFormField(
               controller: _emailController,
-              validator: _emailValidator,
+              validator: Validators.emailValidator,
               keyboardType: TextInputType.emailAddress,
               labelText: 'Email',
               prefixIcon: Icon(Icons.email),

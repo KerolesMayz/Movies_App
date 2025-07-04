@@ -53,7 +53,7 @@ class MovieDetailsProvider extends ChangeNotifier {
       isFavCheckLoading = true;
       notifyListeners();
     }
-    Result<GeneralResponse> result = await ApiServices.addToFavs(
+    Result<GeneralResponse> result = await ApiServices.addToFav(
       id: id,
       rating: rating,
       name: name,
@@ -79,7 +79,7 @@ class MovieDetailsProvider extends ChangeNotifier {
       isFavCheckLoading = true;
       notifyListeners();
     }
-    Result<GeneralResponse> result = await ApiServices.removeFromFavs(id: id);
+    Result<GeneralResponse> result = await ApiServices.removeFromFav(id: id);
     switch (result) {
       case Success<GeneralResponse>():
         await isFavCheck(id: id);
