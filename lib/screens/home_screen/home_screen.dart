@@ -3,10 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:movies/core/assets_manager/assets_manager.dart';
 import 'package:movies/core/colors_manager/colors_Manager.dart';
+import 'package:movies/providers/home_screen_provider.dart';
 import 'package:movies/screens/home_screen/tabs/browse_tab/browse_tab.dart';
 import 'package:movies/screens/home_screen/tabs/home_tab/home_tab.dart';
 import 'package:movies/screens/home_screen/tabs/profile_tab/profile_tab.dart';
 import 'package:movies/screens/home_screen/tabs/search_tab/search_tab.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,12 +18,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
-
   final List<Widget> _tabs = [
     HomeTab(),
     SearchTab(),
-    BrowseTab(),
+    BrowseTab(initialTap: 0),
     ProfileTab(),
   ];
 
@@ -30,7 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
     required String label,
     required int index,
   }) {
-    Color color = index == _currentIndex
+    int selectedIndex = Provider.of<HomeScreenProvider>(context).currentTab;
+    Color color = index == selectedIndex
         ? ColorsManager.yellow
         : ColorsManager.white;
     return BottomNavigationBarItem(
@@ -52,13 +53,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: BottomNavigationBar(
-              currentIndex: 0,
+              currentIndex: Provider.of<HomeScreenProvider>(context).currentTab,
               selectedFontSize: 0,
               unselectedFontSize: 0,
               onTap: (value) {
-                setState(() {
-                  _currentIndex = value;
-                });
+                Provider.of<HomeScreenProvider>(
+                  context,
+                  listen: false,
+                ).navigateToTab(_tabs[value], value);
               },
               items: [
                 customBottomNavigationBarItem(
@@ -87,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       extendBody: true,
-      body: _tabs[_currentIndex],
+      body: Provider.of<HomeScreenProvider>(context).tab,
     );
   }
 }

@@ -13,14 +13,15 @@ import 'package:provider/provider.dart';
 import '../../../../core/widgets/movie_card.dart';
 
 class BrowseTab extends StatefulWidget {
-  const BrowseTab({super.key});
+  const BrowseTab({super.key, required this.initialTap});
 
+  final int initialTap;
   @override
   State<BrowseTab> createState() => _BrowseTabState();
 }
 
 class _BrowseTabState extends State<BrowseTab> {
-  int currentTab = 0;
+  late int currentTab;
   int page = 1;
   bool isLoading = false;
   late BrowseTabProvider exploreTabProvider;
@@ -50,6 +51,7 @@ class _BrowseTabState extends State<BrowseTab> {
   @override
   void initState() {
     super.initState();
+    currentTab = widget.initialTap;
     controller = ScrollController();
     exploreTabProvider = BrowseTabProvider();
     exploreTabProvider.getMoviesList(
@@ -69,6 +71,7 @@ class _BrowseTabState extends State<BrowseTab> {
           children: [
             DefaultTabController(
               length: ConstantsManager.genres.length,
+              initialIndex: widget.initialTap,
               child: TabBar(
                 padding: REdgeInsets.symmetric(horizontal: 8, vertical: 10),
                 indicatorWeight: 0.1,

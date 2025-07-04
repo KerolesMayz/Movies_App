@@ -59,24 +59,27 @@ class EditProfileProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> update(
-    BuildContext context, {
+  Future<void> update(BuildContext context, {
     required String name,
     required String phone,
     required int avatarId,
   }) async {
+
     DialogUtils.showMessageDialog(
       context,
       "Sure you want to Update Account ?",
       positiveTitle: 'Yes',
       positiveAction: () async {
         DialogUtils.showLoadingDialog(context, message: 'please wait');
+
         var result = await ApiServices.updateUser(
           name: name,
           phone: phone,
           avatarId: avatarId,
         );
+
         DialogUtils.hideDialog(context);
+
         switch (result) {
           case Success<GeneralResponse>():
             DialogUtils.showMessageDialog(

@@ -51,13 +51,17 @@ class _ProfileTabState extends State<ProfileTab> {
                         children: [
                           Visibility(
                             visible: _historyNotSelected,
-                            child: ProfileHeaderWidget(
-                              name: ProfileData.userProfile!.name!,
-                              phone: ProfileData.userProfile!.phone!,
-                              watchListCount: favState.data.length.toString(),
-                              historyCount: 5,
-                              avatarIndex: int.parse(
-                                ProfileData.userProfile!.avaterId.toString(),
+                            child: ChangeNotifierProvider<
+                                ProfileProvider>.value(
+                              value: _profileProvider,
+                              child: ProfileHeaderWidget(
+                                name: ProfileData.userProfile!.name!,
+                                phone: ProfileData.userProfile!.phone!,
+                                watchListCount: favState.data.length.toString(),
+                                historyCount: 5,
+                                avatarIndex: int.parse(
+                                  ProfileData.userProfile!.avaterId.toString(),
+                                ),
                               ),
                             ),
                           ),
